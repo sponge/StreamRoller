@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Media Streamer</title>
+  <link rel="stylesheet" href="style.css" media="screen, projector" title="MediaStreamer"/>
+  <link rel="stylesheet" href="/ui-darkness/jquery-ui-1.8.custom.css" media="screen, projector" title="d8d"/>
+  <script type="text/javascript" src="/js/lib/jquery-1.4.2.min.js"></script>
+  <script type="text/javascript" src="/js/lib/jquery-ui-1.8.custom.min.js"></script>
+  <script type="text/javascript" src="/js/lib/jquery.address-1.2rc.min.js"></script>
+  <script type="text/javascript" src="/js/main.js"></script>
+  
+  
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+</head>
+<body>
+
+<script type="text/html" id="tmpl_mediatable">
+  <table>
+    <thead>
+      <tr>
+        <% for (var i=0; columns[i]; i++) { %>
+          <th><%=headers[i] %></th>
+        <% } %>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>..</td><td><%= mm.utils.generateLink('folder', '#'+ parent, 'Parent Directory' ) %></td></tr>
+      <% for (var i=0; data[i]; i++) { var f = data[i]; %>
+        <tr>
+          <% for (var j=0; columns[j]; j++) { %>
+            <% if (columns[j] == 'file' || columns[j] == 'id3_title') { %>
+              <%
+                f.path = (f.path === '.') ? '' : f.path;
+                var link = (f.folder) ? mm.utils.generateLink('folder', '#'+ f.path +'/'+ f.file, f.file) : mm.utils.generateLink('media', '/get/'+ f.id, f[columns[j]]);
+              %>
+              <td><%= link %></td>
+            <%} else { %>
+              <td><%=f[columns[j]]%></td>
+            <% } %>
+          <% } %>
+        </tr>
+      <% } %>
+    </tbody>
+  </table>
+</script>
+
+<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"
+  id="MediaStreamer" width="0" height="0"
+  codebase="http://fpdownload.macromedia.com/get/flashplayer/current/swflash.cab">
+    <param name="movie" value="MediaStreamer.swf" />
+    <param name="quality" value="high" />
+    <param name="bgcolor" value="#869ca7" />
+    <param name="allowScriptAccess" value="sameDomain" />
+    <embed src="MediaStreamer.swf" quality="high" bgcolor="#869ca7"
+      width="0" height="0" name="MediaStreamer" align="middle"
+      play="true"
+      loop="false"
+      quality="high"
+      allowScriptAccess="sameDomain"
+      type="application/x-shockwave-flash"
+      pluginspage="http://www.adobe.com/go/getflashplayer">
+    </embed>
+</object>
+
+<p>Time: <span id="song-progress">0:00</span>/<span id="song-time">0:00</span></p>
+<input type="button" value="play/pause" onclick="mm.player.playPause()"/>
+
+<div id="status"></div>
+<div id="listing">
+</div>
