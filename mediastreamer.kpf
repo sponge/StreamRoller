@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Komodo Project File - DO NOT EDIT -->
 <project id="071e0446-0181-40c1-9ba3-5e680d7ea181" kpf_version="4" name="mediastreamer.kpf">
+<command cwd="%p" doNotOpenOutputWindow="0" env="" id="3cab06e7-87f6-426b-82cd-589440cde963" idref="071e0446-0181-40c1-9ba3-5e680d7ea181" insertOutput="0" keyboard_shortcut="Ctrl+Alt+R" name="Run MediaStreamer" operateOnSelection="0" parseOutput="0" parseRegex="" runIn="command-output-window" showParsedOutputList="0">
+jruby -J-Djava.util.logging.config.file=null main.rb</command>
 <preference-set idref="071e0446-0181-40c1-9ba3-5e680d7ea181">
   <boolean id="import_live">1</boolean>
 </preference-set>

@@ -27,41 +27,42 @@ module Library
     beginTime = Time.now.to_i
     
     Song.delete_all
-    Dir.chdir(dir)
-    files = []
-    Dir['{**/*/,**/*.mp3}'].each do |file|
-      files.push(file)
-    end
-    
-    len = files.length
-    files.each_index do |i|
-      puts i.to_s + '/' + len.to_s if (i % 100 == 0)
+    Dir.chdir(dir) do
+      files = []
+      Dir['{**/*/,**/*.mp3}'].each do |file|
+        files.push(file)
+      end
       
-      file = files[i]
-      fields = {}
-      
-      begin
-        if !File.directory?(file) 
-          fields.merge!( get_tags( read_file(dir + file) ) )
+      len = files.length
+      ActiveRecord::Base.transaction do
+        files.each_index do |i|
+          puts i.to_s + '/' + len.to_s if (i % 100 == 0)
+          
+          file = files[i]
+          fields = {}
+          
+          begin
+            if !File.directory?(file) 
+              fields.merge!( get_tags( read_file(dir + file) ) )
+            end
+          rescue
+            puts "error getting id3 tag: "+ file
+          end
+          
+          begin
+            fields.merge!({ 'folder' => File.directory?(file), 'path' => File.dirname(file), 'file' => File.basename(file) })
+            Song.create(fields)
+          rescue
+            puts "error adding file or folder: #{file} (#{$!})"
+            next
+          end
         end
-      rescue
-        puts "error getting id3 tag: "+ file
       end
       
-      begin
-        fields.merge!({ 'folder' => File.directory?(file), 'path' => File.dirname(file), 'file' => File.basename(file) })
-        
-        s = Song.new(fields)
-        s.save
-      rescue
-        puts "error adding file or folder: "+ file
-        next
-      end
+      scantime = (Time.now.to_i - beginTime)
+      sps = len / scantime
+      puts 'Took ' + scantime.to_s + ' seconds to scan ' + len.to_s + ' songs. (' + sps.to_s + ' songs per second)'
     end
-    
-    scantime = (Time.now.to_i - beginTime)
-    sps = len / scantime
-    puts 'Took ' + scantime.to_s + ' seconds to scan ' + len.to_s + ' songs. (' + sps.to_s + ' songs per second)'
   end
   
 end

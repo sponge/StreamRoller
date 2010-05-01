@@ -35,9 +35,24 @@ class Song < ActiveRecord::Base
 end
 
 # library generation
-skip_discovery = true
-# FIXME: chdir breaks the rest of the app, restart required
-Library::scan(config['location']) if !skip_discovery
+if !Song.table_exists? or !config['skip_discovery']
+  puts "Table not found, creating and forcing library discovery" if !Song.table_exists?
+  ActiveRecord::Base.connection.execute('DROP TABLE IF EXISTS songs;')
+  ActiveRecord::Base.connection.execute('
+    CREATE TABLE "songs" (
+      "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+      "path" TEXT NOT NULL,
+      "file" TEXT NOT NULL,
+      "folder" BOOL NOT NULL DEFAULT false,
+      "id3_track" INTEGER,
+      "id3_artist" TEXT,
+      "id3_album" TEXT,
+      "id3_title" TEXT,
+      "id3_date" TEXT
+    )   
+  ')
+  Library::scan(config['location'])
+end
 
 # =============
 #  main routes

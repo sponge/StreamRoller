@@ -1,2 +1,3 @@
 location: D:/mp3/
 db: library.sqlite
+skip_discovery: true
