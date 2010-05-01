@@ -1,98 +1,192 @@
-(function () {
-
-   
-var mm = {};
-
-window.mm = mm;
-
-mm.defaultCols = ['id3_track', 'id3_title', 'id3_album', 'id3_artist' ];
-mm.defaultLabels = ['#', 'Title', 'Album', 'Artist'];
-mm.ajaxHandle = undefined;
-
-mm.pageHistory = function(e) {
-  mm.showDir(e.path, '#listing');
-};
-
-mm.utils = {};
-
-mm.utils.stripSlashes = function(str) {
-  // strip off trailing/leading slashes
-  return str.replace(/^\/|\/$/g,'')
-};
-
-mm.utils.generateLink = function(rel, href, label) {
-  return ['<a rel="', rel, '" href="', href, '">', label, '</a>'].join('');
-}
-
-mm.utils.findParentDir = function(path) {
-  path = mm.utils.stripSlashes(path);
-  var parts = path.split('/');
-  parts.pop();
-  var dir = parts.length == 0 ? '/' : parts.join('/');
-  return dir;
-};
-
-mm.utils.formatTime = function(time) {
-    time /= 1000;
-    return Math.floor(time/60) +':'+ ((time%60 < 10) ? '0' : '')+ Math.floor(time%60);
-};
-
-mm.player = {};
-
-mm.player.play = function(url) {
-    document.MediaStreamer.playURL(url);
-};
-
-mm.player.playPause = function() {
-    document.MediaStreamer.playPause();
-};
-
-mm.player.getDownloadInfo = function() {
-    return document.MediaStreamer.getDownloadInfo();
-};
-
-mm.player.recvDownloadInfo = function(o) {
-    var time = mm.utils.formatTime(o.length);
-    var percent = Math.floor(o.bytesLoaded / o.bytesTotal * 100);
-    percent = (percent != 100) ? ' ('+percent+'%)' : '';
-    $('#song-time').text(time + percent);
-};
-
-mm.player.recvTime = function(time) {
-    $('#song-progress').text(mm.utils.formatTime(time));
-};
-
-mm.player.playEvent = function(e) {
-    console.log(e);
-    try {
-        mm.player.play(e.target.href);
-    } catch (e) {
-        console.log(e);
-    } finally {
-        return false;
-    }
-};
-
-mm.showDir = function(dir, div) {
-  dir = mm.utils.stripSlashes(dir);
-  if (mm.ajaxHandle) {
-    mm.ajaxHandle.abort();
-  }
-  mm.ajaxHandle = $.getJSON('/list/'+dir, showDirCallback);
-  function showDirCallback(data, textStatus) {
-    if (!data) {
-      alert('Failed');
-      return;
-    }
-    content = mm.renderTable(dir, data, mm.defaultCols, mm.defaultLabels);
-    $(div).html(content);
-    var links = $(div).find('a[rel="media"]').bind('click', mm.player.playEvent);
+~function() {
+  var mm = {};
+  
+  window.mm = mm;
+  
+  var defaultCols = ['id3_track', 'id3_title', 'id3_album', 'id3_artist' ];
+  var defaultLabels = ['#', 'Title', 'Album', 'Artist'];
+  var ajaxHandle = undefined;
+  
+  mm.pageHistory = function(e) {
+    mm.showDir(e.path, '#listing');
   };
-};
+  
+  mm.renderTable = function(dir, data, columns, headers) {
+    return mm.tmpl('tmpl_mediatable', {data: data, columns: columns, headers: headers, parent: mm.utils.findParentDir(dir) });
+  };
+  
+  mm.showDir = function(dir, div) {
+    dir = mm.utils.stripSlashes(dir);
+    if (ajaxHandle) {
+      ajaxHandle.abort();
+    }
+    mm.ajaxHandle = $.getJSON('/list/'+dir, showDirCallback);
+    function showDirCallback(data, textStatus) {
+      if (!data) {
+        alert('Failed');
+        return;
+      }
+      content = mm.renderTable(dir, data, defaultCols, defaultLabels);
+      $(div).html(content);
+      var links = $(div).find('a[rel="media"]').click(mm.player.playEvent);
+    };
+  };
+}();
 
-mm.renderTable = function(dir, data, columns, headers) {
-  return mm.tmpl('tmpl_mediatable', {data: data, columns: columns, headers: headers, parent: mm.utils.findParentDir(dir) });
-};
+~function() {
+  mm.utils = {};
+  
+  mm.utils.stripSlashes = function(str) {
+    // strip off trailing/leading slashes
+    return str.replace(/^\/|\/$/g,'')
+  };
+  
+  mm.utils.generateLink = function(rel, href, label) {
+    return ['<a rel="', rel, '" href="', href, '">', label, '</a>'].join('');
+  }
+  
+  mm.utils.findParentDir = function(path) {
+    path = mm.utils.stripSlashes(path);
+    var parts = path.split('/');
+    parts.pop();
+    var dir = parts.length == 0 ? '/' : parts.join('/');
+    return dir;
+  };
+  
+  mm.utils.formatTime = function(time) {
+      time /= 1000;
+      return Math.floor(time/60) +':'+ ((time%60 < 10) ? '0' : '')+ Math.floor(time%60);
+  };
+}();
+
+~function() {
+  mm.player = {};
+  
+  var global_lp = 0;
+  var playerHnd, muteLvl;
+
+  function showPlayBtn() {
+    $("#pause").hide()
+    $("#play").show();
+  };
+  
+  function showPauseBtn() {
+    $("#pause").show()
+    $("#play").hide();
+  };
+  
+  mm.player.init = function() {
+    playerHnd = $("#jquery_jplayer");
+    
+    $("#pause").hide();
+    playerHnd.jPlayer({
+      customCssIds: true,
+      swfPath: "/"
+    })
+    .jPlayer("onProgressChange", function(lp,ppr,ppa,pt,tt) {
+      var lpInt = parseInt(lp);
+      var ppaInt = parseInt(ppa);
+      global_lp = lpInt;
+  
+      $('#loaderBar').progressbar('option', 'value', lpInt);
+      $('#sliderPlayback').slider('option', 'value', ppaInt);
+    })
+    .jPlayer("onSoundComplete", function() {
+      this.element.jPlayer("play");
+    });
+    
+    $("#volume-min").click(mm.player.toggleMute);
+  
+    $("#player_progress_ctrl_bar a").live( "click", function() {
+      playerHnd.jPlayer("playHead", this.id.substring(3)*(100.0/global_lp));
+      return false;
+    });
+  
+    $('#play').button({ text: false, disabled: true, icons: {primary:'ui-icon-play'}}).click(mm.player.play);
+    $('#pause').button({ text: false, disabled: true, icons: {primary:'ui-icon-pause'}}).click(mm.player.pause);
+    $('#stop').button({ text: false, disabled: true, icons: {primary:'ui-icon-stop'}}).click(mm.player.stop);
+    $('#mute').button({ text: false, icons: {primary:'ui-icon-volume-on'}}).click(mm.player.toggleMute);
+  
+    // Slider
+    $('#sliderPlayback').slider({
+      max: 100,
+      range: 'min',
+      cornerAll: false,
+      slide: function(event, ui) {
+        playerHnd.jPlayer("playHead", ui.value*(100.0/global_lp));
+      }
+    });
+  
+    $('#sliderVolume').slider({
+      value : 80,
+      max: 100,
+      range: 'min',
+      slide: function(event, ui) {
+        mm.player.setVol(ui.value, false);
+      }
+    });
+  
+    $('#loaderBar').progressbar();
+  
+  
+    //hover states on the static widgets
+    $('ul#icons li').hover(
+      function() { $(this).addClass('ui-state-hover'); },
+      function() { $(this).removeClass('ui-state-hover'); }
+    );
+  };
+  
+  mm.player.playEvent = function(e) {
+      mm.player.play(e.target.href);
+      return false;
+  };
+  
+  mm.player.play = function() {
+    if (typeof arguments[0] == 'string') {
+      playerHnd.jPlayer('setFile', arguments[0]);
+    }
+    
+    playerHnd.jPlayer("play");
+    $('#play, #pause, #stop').button('option', 'disabled', false );
+    
+    showPauseBtn();
+    return false;
+  };
+  
+  mm.player.pause = function() {
+    playerHnd.jPlayer("pause");
+    showPlayBtn();
+    return false;
+  };
+  
+  mm.player.stop = function() {
+      playerHnd.jPlayer("stop");
+      $('#stop').button('option', 'disabled', true );
+      showPlayBtn();
+      return false;
+  };
+  
+  mm.player.setVol = function(vol, updateSlider) {
+    playerHnd.jPlayer("volume", vol);
+    if (!updateSlider) $('#sliderVolume').slider('option', 'value', vol);   
+  }
+  
+  mm.player.toggleMute = function() {
+    if (muteLvl) {
+      $('#mute').button('option', 'icons', {primary:'ui-icon-volume-on'});
+      mm.player.setVol(muteLvl);
+      muteLvl = 0;
+    } else {
+      $('#mute').button('option', 'icons', {primary:'ui-icon-volume-off'});
+      muteLvl = playerHnd.jPlayer('getData','volume');
+      mm.player.setVol(0);
+    }
+    return false;    
+  };
+  
+  mm.player.maxVol = function() {
+  };
+}();
 
 // Simple JavaScript Templating
 // John Resig - http://ejohn.org/ - MIT Licensed
@@ -133,10 +227,10 @@ $(document).ready(function() {
   }
   
   $.address.change(mm.pageHistory);
-  $('#status')
-    .ajaxStart(function() { $(this).html('<font color="red">Loading...</font>') } )
-    .ajaxStop(function() { $(this).html('<font color="green">Loaded</font>') } );
+  
+  mm.player.init();
+  
+  $('#listing')
+    .ajaxStart(function() { $(this).hide() } )
+    .ajaxStop(function() { $(this).show() } );
 });
-
-
-}());

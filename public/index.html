@@ -2,14 +2,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
   <title>Media Streamer</title>
-  <link rel="stylesheet" href="style.css" media="screen, projector" title="MediaStreamer"/>
-  <link rel="stylesheet" href="/ui-darkness/jquery-ui-1.8.custom.css" media="screen, projector" title="d8d"/>
+  <link type="text/css" rel="stylesheet" href="/dark-hive/jquery-ui-1.8.1.custom.css"/>
+  <link type="text/css" rel="stylesheet" href="style.css"/>
   <script type="text/javascript" src="/js/lib/jquery-1.4.2.min.js"></script>
-  <script type="text/javascript" src="/js/lib/jquery-ui-1.8.custom.min.js"></script>
+  <script type="text/javascript" src="/js/lib/jquery-ui-1.8.1.custom.min.js"></script>
   <script type="text/javascript" src="/js/lib/jquery.address-1.2rc.min.js"></script>
+  <script type="text/javascript" src="/js/lib/jquery.jplayer.min.js"></script>
   <script type="text/javascript" src="/js/main.js"></script>
-  
-  
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 </head>
 <body>
@@ -44,27 +43,22 @@
   </table>
 </script>
 
-<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"
-  id="MediaStreamer" width="0" height="0"
-  codebase="http://fpdownload.macromedia.com/get/flashplayer/current/swflash.cab">
-    <param name="movie" value="MediaStreamer.swf" />
-    <param name="quality" value="high" />
-    <param name="bgcolor" value="#869ca7" />
-    <param name="allowScriptAccess" value="sameDomain" />
-    <embed src="MediaStreamer.swf" quality="high" bgcolor="#869ca7"
-      width="0" height="0" name="MediaStreamer" align="middle"
-      play="true"
-      loop="false"
-      quality="high"
-      allowScriptAccess="sameDomain"
-      type="application/x-shockwave-flash"
-      pluginspage="http://www.adobe.com/go/getflashplayer">
-    </embed>
-</object>
-
-<p>Time: <span id="song-progress">0:00</span>/<span id="song-time">0:00</span></p>
-<input type="button" value="play/pause" onclick="mm.player.playPause()"/>
-
+<div id="jquery_jplayer"></div>
+<div id="controls">
+  <div id="playback">
+    <button id="play">Play</button>
+    <button id="pause">Pause</button>
+    <button id="stop">Stop</button>
+    <div id="bars_holder">
+      <div id="sliderPlayback"></div>
+      <div id="loaderBar"></div>
+    </div>
+  </div>
+  <div id="volume">
+    <button id="mute">Mute</button>
+    <div id="sliderVolume"></div>
+  </div>
+</div>
 <div id="status"></div>
 <div id="listing">
 </div>
