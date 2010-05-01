@@ -1,26 +1,44 @@
 ~function() {
-  var mm = {};
-  
-  window.mm = mm;
+  window.mm = {};
   
   var defaultCols = ['id3_track', 'id3_title', 'id3_album', 'id3_artist' ];
   var defaultLabels = ['#', 'Title', 'Album', 'Artist'];
   var ajaxHandle = undefined;
+  var currData = [];
   
   mm.pageHistory = function(e) {
     mm.showDir(e.path, '#listing');
   };
   
   mm.renderTable = function(dir, data, columns, headers) {
-    return mm.tmpl('tmpl_mediatable', {data: data, columns: columns, headers: headers, parent: mm.utils.findParentDir(dir) });
+    currData = data;
+    var table = $(mm.tmpl('tmpl_mediatable', {data: data, columns: columns, headers: headers, parent: mm.utils.findParentDir(dir) }));
+    $(table).find('tbody tr').bind('click', mm.clickRow);
+    return table;
   };
+  
+  mm.clickRow = function(e) {
+    var o = currData[this.getAttribute('rel')];
+    if (!o) {
+      window.location.hash = mm.utils.findParentDir(window.location.hash);
+      return false;
+    };
+    
+    if (o.folder == 't') {
+      window.location.hash = o.path +'/'+ o.file;
+      return false;
+    };
+    
+    mm.player.play(o);
+    return false;
+  }
   
   mm.showDir = function(dir, div) {
     dir = mm.utils.stripSlashes(dir);
     if (ajaxHandle) {
       ajaxHandle.abort();
     }
-    mm.ajaxHandle = $.getJSON('/list/'+dir, showDirCallback);
+    ajaxHandle = $.getJSON('/list/'+dir, showDirCallback);
     function showDirCallback(data, textStatus) {
       if (!data) {
         alert('Failed');
@@ -28,15 +46,16 @@
       }
       content = mm.renderTable(dir, data, defaultCols, defaultLabels);
       $(div).html(content);
-      var links = $(div).find('a[rel="media"]').click(mm.player.playEvent);
+      
     };
   };
 }();
 
 ~function() {
-  mm.utils = {};
+  var mod = {}
+  mm.utils = mod;
   
-  mm.utils.stripSlashes = function(str) {
+  mod.stripSlashes = function(str) {
     // strip off trailing/leading slashes
     return str.replace(/^\/|\/$/g,'')
   };
@@ -45,7 +64,7 @@
     return ['<a rel="', rel, '" href="', href, '">', label, '</a>'].join('');
   }
   
-  mm.utils.findParentDir = function(path) {
+  mod.findParentDir = function(path) {
     path = mm.utils.stripSlashes(path);
     var parts = path.split('/');
     parts.pop();
@@ -53,14 +72,15 @@
     return dir;
   };
   
-  mm.utils.formatTime = function(time) {
+  mod.formatTime = function(time) {
       time /= 1000;
       return Math.floor(time/60) +':'+ ((time%60 < 10) ? '0' : '')+ Math.floor(time%60);
   };
 }();
 
 ~function() {
-  mm.player = {};
+  var mod = {}
+  mm.player = mod;
   
   var global_lp = 0;
   var playerHnd, muteLvl;
@@ -75,7 +95,7 @@
     $("#play").hide();
   };
   
-  mm.player.init = function() {
+  mod.init = function() {
     playerHnd = $("#jquery_jplayer");
     
     $("#pause").hide();
@@ -92,7 +112,7 @@
       $('#sliderPlayback').slider('option', 'value', ppaInt);
     })
     .jPlayer("onSoundComplete", function() {
-      this.element.jPlayer("play");
+      // goto next playlist entry
     });
     
     $("#volume-min").click(mm.player.toggleMute);
@@ -111,7 +131,6 @@
     $('#sliderPlayback').slider({
       max: 100,
       range: 'min',
-      cornerAll: false,
       slide: function(event, ui) {
         playerHnd.jPlayer("playHead", ui.value*(100.0/global_lp));
       }
@@ -127,23 +146,13 @@
     });
   
     $('#loaderBar').progressbar();
-  
-  
-    //hover states on the static widgets
-    $('ul#icons li').hover(
-      function() { $(this).addClass('ui-state-hover'); },
-      function() { $(this).removeClass('ui-state-hover'); }
-    );
   };
   
-  mm.player.playEvent = function(e) {
-      mm.player.play(e.target.href);
-      return false;
-  };
-  
-  mm.player.play = function() {
-    if (typeof arguments[0] == 'string') {
-      playerHnd.jPlayer('setFile', arguments[0]);
+  mod.play = function() {
+    var o = arguments[0];
+    if (o.id) {
+      playerHnd.jPlayer('setFile', '/get/'+o.id);
+      mod.setInfo(o);
     }
     
     playerHnd.jPlayer("play");
@@ -153,25 +162,32 @@
     return false;
   };
   
-  mm.player.pause = function() {
+  mod.setInfo = function(o) {
+    var str = '<b>Now Playing:</b> '+
+      ((o.id3_title) ? o.id3_title : o.file) +
+      ((o.id3_artist) ? ' by '+ o.id3_artist : '') +
+      ((o.id3_album) ? ' from the album '+ o.id3_album : '');
+    $('#nowplaying').html(str);
+  };
+  
+  mod.pause = function() {
     playerHnd.jPlayer("pause");
     showPlayBtn();
     return false;
   };
   
-  mm.player.stop = function() {
+  mod.stop = function() {
       playerHnd.jPlayer("stop");
-      $('#stop').button('option', 'disabled', true );
       showPlayBtn();
       return false;
   };
   
-  mm.player.setVol = function(vol, updateSlider) {
+  mod.setVol = function(vol, updateSlider) {
     playerHnd.jPlayer("volume", vol);
     if (!updateSlider) $('#sliderVolume').slider('option', 'value', vol);   
   }
   
-  mm.player.toggleMute = function() {
+  mod.toggleMute = function() {
     if (muteLvl) {
       $('#mute').button('option', 'icons', {primary:'ui-icon-volume-on'});
       mm.player.setVol(muteLvl);
@@ -182,9 +198,6 @@
       mm.player.setVol(0);
     }
     return false;    
-  };
-  
-  mm.player.maxVol = function() {
   };
 }();
 
@@ -226,11 +239,11 @@ $(document).ready(function() {
     window.console = { log: function(){}, dir: function(){} }
   }
   
-  $.address.change(mm.pageHistory);
-  
   mm.player.init();
   
   $('#listing')
     .ajaxStart(function() { $(this).hide() } )
     .ajaxStop(function() { $(this).show() } );
+
+  $.address.change(mm.pageHistory);
 });

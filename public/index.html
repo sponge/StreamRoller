@@ -25,7 +25,7 @@
     <tbody>
       <tr><td>..</td><td><%= mm.utils.generateLink('folder', '#'+ parent, 'Parent Directory' ) %></td></tr>
       <% for (var i=0; data[i]; i++) { var f = data[i]; %>
-        <tr>
+        <tr rel="<%= i %>">
           <% for (var j=0; columns[j]; j++) { %>
             <% if (columns[j] == 'file' || columns[j] == 'id3_title') { %>
               <%
@@ -45,6 +45,7 @@
 
 <div id="jquery_jplayer"></div>
 <div id="controls">
+  <div id="nowplaying">&nbsp;</div>
   <div id="playback">
     <button id="play">Play</button>
     <button id="pause">Pause</button>
@@ -55,10 +56,9 @@
     </div>
   </div>
   <div id="volume">
-    <button id="mute">Mute</button>
     <div id="sliderVolume"></div>
+    <button id="mute">Mute</button>
   </div>
 </div>
-<div id="status"></div>
 <div id="listing">
 </div>
