@@ -38,7 +38,7 @@ a:hover {
 }
 
 #nowplaying {
-  margin: 1em 0 1em 0;
+  margin: 1em 0 0.75em 0;
 }
 
 #volume {
@@ -58,6 +58,7 @@ a:hover {
 #sliderVolume {
   width:120px;
   height:.4em;
+  margin: 8px 0 0 1em;
 }
 
 #sliderVolume .ui-slider-handle {
@@ -66,8 +67,9 @@ a:hover {
 }
 
 #bars_holder {
-  width:350px;
+  width:375px;
   float: right;
+  margin: 6px 0;
 }
 
 #sliderPlayback .ui-slider-handle {

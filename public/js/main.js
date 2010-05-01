@@ -1,10 +1,10 @@
 ~function() {
   window.mm = {};
   
-  var defaultCols = ['id3_track', 'id3_title', 'id3_album', 'id3_artist' ];
-  var defaultLabels = ['#', 'Title', 'Album', 'Artist'];
-  var ajaxHandle = undefined;
-  var currData = [];
+  var defaultCols = ['id3_track', 'id3_title', 'id3_album', 'id3_artist' ],
+      defaultLabels = ['#', 'Title', 'Album', 'Artist'],
+      ajaxHandle,
+      currData;
   
   mm.pageHistory = function(e) {
     mm.showDir(e.path, '#listing');
@@ -22,53 +22,54 @@
     if (!o) {
       window.location.hash = mm.utils.findParentDir(window.location.hash);
       return false;
-    };
+    }
     
     if (o.folder == 't') {
       window.location.hash = o.path +'/'+ o.file;
       return false;
-    };
+    }
     
     mm.player.play(o);
     return false;
-  }
+  };
   
   mm.showDir = function(dir, div) {
     dir = mm.utils.stripSlashes(dir);
     if (ajaxHandle) {
       ajaxHandle.abort();
     }
-    ajaxHandle = $.getJSON('/list/'+dir, showDirCallback);
+
     function showDirCallback(data, textStatus) {
       if (!data) {
         alert('Failed');
         return;
       }
-      content = mm.renderTable(dir, data, defaultCols, defaultLabels);
+      var content = mm.renderTable(dir, data, defaultCols, defaultLabels);
       $(div).html(content);
       
-    };
+    }
+    ajaxHandle = $.getJSON('/list/'+dir, showDirCallback);
   };
 }();
 
 ~function() {
-  var mod = {}
+  var mod = {};
   mm.utils = mod;
   
   mod.stripSlashes = function(str) {
     // strip off trailing/leading slashes
-    return str.replace(/^\/|\/$/g,'')
+    return str.replace(/^\/|\/$/g,'');
   };
   
   mm.utils.generateLink = function(rel, href, label) {
     return ['<a rel="', rel, '" href="', href, '">', label, '</a>'].join('');
-  }
+  };
   
   mod.findParentDir = function(path) {
     path = mm.utils.stripSlashes(path);
     var parts = path.split('/');
     parts.pop();
-    var dir = parts.length == 0 ? '/' : parts.join('/');
+    var dir = (parts.length === 0) ? '/' : parts.join('/');
     return dir;
   };
   
@@ -79,21 +80,21 @@
 }();
 
 ~function() {
-  var mod = {}
+  var mod = {};
   mm.player = mod;
   
   var global_lp = 0;
   var playerHnd, muteLvl;
 
   function showPlayBtn() {
-    $("#pause").hide()
+    $("#pause").hide();
     $("#play").show();
-  };
+  }
   
   function showPauseBtn() {
-    $("#pause").show()
+    $("#pause").show();
     $("#play").hide();
-  };
+  }
   
   mod.init = function() {
     playerHnd = $("#jquery_jplayer");
@@ -104,8 +105,8 @@
       swfPath: "/"
     })
     .jPlayer("onProgressChange", function(lp,ppr,ppa,pt,tt) {
-      var lpInt = parseInt(lp);
-      var ppaInt = parseInt(ppa);
+      var lpInt = parseInt(lp, 10);
+      var ppaInt = parseInt(ppa, 10);
       global_lp = lpInt;
   
       $('#loaderBar').progressbar('option', 'value', lpInt);
@@ -185,7 +186,7 @@
   mod.setVol = function(vol, updateSlider) {
     playerHnd.jPlayer("volume", vol);
     if (!updateSlider) $('#sliderVolume').slider('option', 'value', vol);   
-  }
+  };
   
   mod.toggleMute = function() {
     if (muteLvl) {
@@ -236,14 +237,14 @@ mm.tmpl = function tmpl(str, data) {
 $(document).ready(function() {
 
   if (!window.console) {
-    window.console = { log: function(){}, dir: function(){} }
+    window.console = { log: function(){}, dir: function(){} };
   }
   
   mm.player.init();
   
   $('#listing')
-    .ajaxStart(function() { $(this).hide() } )
-    .ajaxStop(function() { $(this).show() } );
+    .ajaxStart(function() { $(this).hide(); } )
+    .ajaxStop(function() { $(this).show(); } );
 
   $.address.change(mm.pageHistory);
 });
