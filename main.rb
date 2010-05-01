@@ -35,8 +35,7 @@ class Song < ActiveRecord::Base
 end
 
 # library generation
-skip_discovery = config['skip_discovery']
-if !Song.table_exists? or !skip_discovery
+if !Song.table_exists? or !config['skip_discovery']
   puts "Table not found, creating and forcing library discovery" if !Song.table_exists?
   ActiveRecord::Base.connection.execute('DROP TABLE IF EXISTS songs;')
   ActiveRecord::Base.connection.execute('
@@ -52,11 +51,8 @@ if !Song.table_exists? or !skip_discovery
       "id3_date" TEXT
     )   
   ')
-  skip_discovery = false
+  Library::scan(config['location'])
 end
-
-# FIXME: chdir breaks the rest of the app, restart required
-Library::scan(config['location']) if !skip_discovery
 
 # =============
 #  main routes
