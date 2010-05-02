@@ -109,7 +109,7 @@
       var ppaInt = parseInt(ppa, 10);
       global_lp = lpInt;
   
-      $('#loaderBar').progressbar('option', 'value', lpInt);
+      $('#loaderBar').progressbar('option', 'value', lpInt % 100);
       $('#sliderPlayback').slider('option', 'value', ppaInt);
     })
     .jPlayer("onSoundComplete", function() {

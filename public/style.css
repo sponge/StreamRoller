@@ -91,14 +91,14 @@ a:hover {
 }
 
 #loaderBar {
-  height:1px;
+  height:2px;
   background: none;
   border:0;
 }
 
 #loaderBar .ui-progressbar-value {
   border: none;
-  background: none #006600;
+  background: none #00AA00;
   margin: 0;
 }
 

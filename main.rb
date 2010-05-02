@@ -111,6 +111,7 @@ get '/pic/:id' do |n|
   ActiveRecord::Base.clear_reloadable_connections!
   Timeout.timeout(10) do
     f = Song.find(params[:id])
+    return false if f.art == 'f'
     headers 'Content-Type' => f.id3_pic_mime
     send_file "art/#{f.id}.#{f.id3_pic_mime.split('/')[1]}"
   end
