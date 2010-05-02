@@ -164,11 +164,16 @@
   };
   
   mod.setInfo = function(o) {
-    var str = '<b>Now Playing:</b> '+
+    var str = '<strong>Now Playing:</strong> '+
       ((o.id3_title) ? o.id3_title : o.file) +
-      ((o.id3_artist) ? ' by '+ o.id3_artist : '') +
-      ((o.id3_album) ? ' from the album '+ o.id3_album : '');
+      ((o.id3_artist) ? ' <em>by</em> '+ o.id3_artist : '') +
+      ((o.id3_album) ? ' <em>from the album</em> '+ o.id3_album : '');
     $('#nowplaying').html(str);
+    if (o.art) {
+      $('#art img').attr('src', '/pic/'+o.id).show();
+    } else {
+      $('#art img').attr('src', '').hide();
+    }
   };
   
   mod.pause = function() {

@@ -37,22 +37,28 @@ end
 # library generation
 if !Song.table_exists? or !config['skip_discovery']
   puts "Table not found, creating and forcing library discovery" if !Song.table_exists?
+  FileUtils.mkdir('art') if !File.directory?('art')
   ActiveRecord::Base.connection.execute('DROP TABLE IF EXISTS songs;')
   ActiveRecord::Base.connection.execute('
     CREATE TABLE "songs" (
       "id" INTEGER PRIMARY KEY AUTOINCREMENT,
       "path" TEXT NOT NULL,
       "file" TEXT NOT NULL,
-      "folder" BOOL NOT NULL DEFAULT false,
+      "folder" BOOL NOT NULL DEFAULT f,
+      "length" INTEGER,
+      "art" BOOL NOT NULL DEFAULT f,
       "id3_track" INTEGER,
       "id3_artist" TEXT,
       "id3_album" TEXT,
       "id3_title" TEXT,
-      "id3_date" TEXT
+      "id3_date" TEXT,
+      "id3_pic_mime" TEXT
     )   
   ')
   Library::scan(config['location'])
 end
+
+Thread.new { Library::scan_album_art(config['location']) }
 
 # =============
 #  main routes
@@ -98,6 +104,15 @@ get '/get/:id' do |n|
     f = Song.find(params[:id])
     filepath = config['location'] + f.path + '/' + f.file
     send_file filepath, :filename => f.file
+  end
+end
+
+get '/pic/:id' do |n|
+  ActiveRecord::Base.clear_reloadable_connections!
+  Timeout.timeout(10) do
+    f = Song.find(params[:id])
+    headers 'Content-Type' => f.id3_pic_mime
+    send_file "art/#{f.id}.#{f.id3_pic_mime.split('/')[1]}"
   end
 end
 

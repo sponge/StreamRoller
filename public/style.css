@@ -31,10 +31,23 @@ a:hover {
 /* controls */
 #controls {
   width: 450px;
+  height: 75px;
 }
 
 #playback {
 
+}
+
+#art {
+  width: 75px;
+  height: 75px;
+  margin-right: 0.4em;
+  float: left;
+  background-color: #111;
+}
+
+#art img {
+  display: none;
 }
 
 #nowplaying {
@@ -67,7 +80,7 @@ a:hover {
 }
 
 #bars_holder {
-  width:375px;
+  width:300px;
   float: right;
   margin: 6px 0;
 }

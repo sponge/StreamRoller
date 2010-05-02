@@ -15,11 +15,11 @@ module Library
       'id3_artist' => FieldKey::ARTIST,
       'id3_album' => FieldKey::ALBUM,
       'id3_title' => FieldKey::TITLE,
-      'id3_date' => FieldKey::YEAR,
+      'id3_date' => FieldKey::YEAR
     }.each do |k,v|
       tags[k] = tag.getFirst(v)
     end
-    
+    tags['length'] = af.getAudioHeader().getTrackLength();
     return tags
   end
   
@@ -46,7 +46,7 @@ module Library
               fields.merge!( get_tags( read_file(dir + file) ) )
             end
           rescue
-            puts "error getting id3 tag: "+ file
+            puts "error getting id3 tag: #{file}"
           end
           
           begin
@@ -61,7 +61,27 @@ module Library
       
       scantime = (Time.now.to_i - beginTime)
       sps = len / scantime
-      puts 'Took ' + scantime.to_s + ' seconds to scan ' + len.to_s + ' songs. (' + sps.to_s + ' songs per second)'
+      puts "Took #{scantime.to_s} seconds to scan #{len.to_s} songs. (#{sps.to_s} songs per second)"
+    end
+  end
+  
+  def scan_album_art(base)
+    songs = Song.find(:all, :conditions => { :art => 'f', :folder => 'f' })
+    songs.each do |song|      
+      begin
+        art = read_file(base + song.path.to_s + '/' + song.file.to_s).getTag().getFirstArtwork()
+        if (art)
+          mime = art.getMimeType().to_s
+          Song.update(song.id, :art => 't', :id3_pic_mime => mime)
+          f = java.io.File.new("art/#{song.id.to_s}.#{mime.split('/')[1]}")
+          fos = java.io.FileOutputStream.new(f)
+          fos.write(art.getBinaryData())
+          fos.flush()
+          fos.close()
+        end
+      rescue
+        puts "Error scanning album art: #{$!}"
+      end
     end
   end
   

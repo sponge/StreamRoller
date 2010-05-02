@@ -10,7 +10,7 @@ module Utils
     arr = JSON.parse(arr.to_json)
     arr.each do |hash|
       hash.each do |k,v|
-        hash.delete(k) if v == '' || v == nil || (k == 'folder' && v == 'f')
+        hash.delete(k) if v == '' || v == nil || (k == 'folder' && v == 'f') || (k == 'art' && v == 'f')
       end
     end
     
