@@ -46,13 +46,12 @@ if !Song.table_exists? or !config['skip_discovery']
       "file" TEXT NOT NULL,
       "folder" BOOL NOT NULL DEFAULT f,
       "length" INTEGER,
-      "art" BOOL NOT NULL DEFAULT f,
+      "art" TEXT,
       "id3_track" INTEGER,
       "id3_artist" TEXT,
       "id3_album" TEXT,
       "id3_title" TEXT,
-      "id3_date" TEXT,
-      "id3_pic_mime" TEXT
+      "id3_date" TEXT
     )   
   ')
   Library::scan(config['location'])
@@ -112,8 +111,7 @@ get '/pic/:id' do |n|
   Timeout.timeout(10) do
     f = Song.find(params[:id])
     return false if f.art == 'f'
-    headers 'Content-Type' => f.id3_pic_mime
-    send_file "art/#{f.id}.#{f.id3_pic_mime.split('/')[1]}"
+    send_file "art/#{f.art}"
   end
 end
 

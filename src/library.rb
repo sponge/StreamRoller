@@ -66,18 +66,24 @@ module Library
   end
   
   def scan_album_art(base)
-    songs = Song.find(:all, :conditions => { :art => 'f', :folder => 'f' })
+    songs = Song.find(:all, :conditions => { :art => nil, :folder => 'f' })
     songs.each do |song|      
       begin
         art = read_file(base + song.path.to_s + '/' + song.file.to_s).getTag().getFirstArtwork()
         if (art)
-          mime = art.getMimeType().to_s
-          Song.update(song.id, :art => 't', :id3_pic_mime => mime)
-          f = java.io.File.new("art/#{song.id.to_s}.#{mime.split('/')[1]}")
-          fos = java.io.FileOutputStream.new(f)
-          fos.write(art.getBinaryData())
-          fos.flush()
-          fos.close()
+          m = java.security.MessageDigest.getInstance('MD5')
+          m.update(art.getBinaryData())
+          md5 = java.math.BigInteger.new(m.digest()).toString(16).slice(-8,8)
+          ext = art.getMimeType().to_s.split('/')[1]
+          filename = "#{md5}.#{mime}"
+          Song.update(song.id, :art => ext)
+          if (!File.exists? "art/#{filename}")
+            f = java.io.File.new("art/#{filename}")
+            fos = java.io.FileOutputStream.new(f)
+            fos.write(art.getBinaryData())
+            fos.flush()
+            fos.close()
+          end
         end
       rescue
         puts "Error scanning album art: #{$!}"
