@@ -3,7 +3,7 @@ body {
   color: #EEEEEE;
   font-family: 'Helvetica', 'Verdana', sans-serif;
   font-size: 0.8em;
-  margin: 1em 0 0 2em;
+  margin: 1em 2em 0 2em;
 }
 
 a {
@@ -13,6 +13,10 @@ a {
 
 a:hover {
   border-bottom: 1px dotted #00FFFF;
+}
+
+#listing {
+  float: left;  
 }
 
 #listing th, #listing td {
@@ -26,6 +30,15 @@ a:hover {
 #listing tr:hover {
   background-color: #444;
   cursor: pointer;
+}
+
+#playlist {
+  float: right;
+  margin-bottom: 1em;
+}
+
+#playlist .list .selected {
+  background-color: #333;
 }
 
 /* controls */
@@ -59,7 +72,7 @@ a:hover {
   margin-bottom: 5px;
 }
 
-#play, #pause, #stop, #mute {
+#play, #pause, #stop, #mute, #prev, #next {
   width: 24px;
   height: 24px;
 }

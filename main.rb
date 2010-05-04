@@ -30,7 +30,7 @@ db = ActiveRecord::Base.establish_connection(
 # models
 class Song < ActiveRecord::Base
   def self.list_by_path(path)
-    self.find(:all, :conditions => { :path => path }, :order => 'folder DESC, id3_track, id3_title, file' )
+    self.find(:all, :conditions => { :path => path }, :order => 'folder DESC, id3_track, file' )
   end
 end
 
@@ -89,7 +89,7 @@ get '/browse/?' do
       cond = {}
       cond[:id3_artist] = params[:artist] if !params[:artist].to_s.empty?
       cond[:id3_album] = params[:album] if !params[:album].to_s.empty?
-      songs = Song.find(:all, :select => 'id, id3_title', :conditions => cond, :order => 'folder, id3_track, id3_title, file')
+      songs = Song.find(:all, :select => 'id, id3_title', :conditions => cond, :order => 'folder, id3_track, file ')
     end
     
     { :artists => artists, :albums => albums, :songs => songs }.to_json;
