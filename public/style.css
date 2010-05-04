@@ -2,8 +2,10 @@ body {
   background-color: #151515;
   color: #EEEEEE;
   font-family: 'Helvetica', 'Verdana', sans-serif;
+  margin: 0;
+  padding: 0;
   font-size: 0.8em;
-  margin: 1em 2em 0 2em;
+  margin-top: 1em;
 }
 
 a {
@@ -16,7 +18,8 @@ a:hover {
 }
 
 #listing {
-  float: left;  
+  float: left;
+  margin: 0em 2em 0 2em;
 }
 
 #listing th, #listing td {
@@ -34,23 +37,35 @@ a:hover {
 
 #playlist {
   float: right;
-  margin-bottom: 1em;
+  margin: 0em 2em 1em 2em;
+  max-width: 450px;
 }
 
 #playlist .list .selected {
   background-color: #333;
 }
 
+#body {
+  clear: both;
+}
+
+.smallDisplay {
+  float: left !important;
+  max-height: 200px;
+  overflow-y: scroll;
+  width: 450px;
+}
+
 /* controls */
 #controls {
   width: 450px;
   height: 75px;
+  margin-left: 2em;
 }
 
 #playback {
 
 }
-
 #art {
   width: 75px;
   height: 75px;
@@ -72,9 +87,10 @@ a:hover {
   margin-bottom: 5px;
 }
 
-#play, #pause, #stop, #mute, #prev, #next {
+#controls button {
   width: 24px;
   height: 24px;
+  margin: 2px 0 2px 0;
 }
 
 #mute {
@@ -93,7 +109,7 @@ a:hover {
 }
 
 #bars_holder {
-  width:300px;
+  width:362px;
   float: right;
   margin: 6px 0;
 }

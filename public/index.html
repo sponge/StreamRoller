@@ -43,29 +43,34 @@
   </table>
 </script>
 
-<div id="jquery_jplayer"></div>
-<div id="nowplaying">&nbsp;</div>
 <div id="controls">
+  <div id="jquery_jplayer"></div>
+  <div id="nowplaying">&nbsp;</div>
   <div id="art"><img src="" width="75" height="75"/></div>
   <div id="playback">
-    <button id="play">Play</button>
-    <button id="pause">Pause</button>
-    <button id="stop">Stop</button>
     <div id="bars_holder">
       <div id="sliderPlayback"></div>
       <div id="loaderBar"></div>
     </div>
+  </div>
+  <div style="float: left;">
+    <button id="play">Play</button>
+    <button id="pause">Pause</button>
     <button id="prev">Prev</button>
     <button id="next">Next</button>
-  </div>
+    </div>
   <div id="volume">
     <div id="sliderVolume"></div>
     <button id="mute">Mute</button>
   </div>
 </div>
-<div id="playlist">
-  <span>Current Playlist:</span>
-  <div class="list"></div>
+<div id="body">
+  <div id="playlist">
+    <span>Current Playlist:</span>
+    <div class="list"></div>
+  </div>
+  <div id="listing"></div>
 </div>
-<div id="listing">
-</div>
+
+</body>
+</html>

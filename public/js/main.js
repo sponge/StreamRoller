@@ -58,6 +58,14 @@
     }
     ajaxHandle = $.getJSON('/list/'+dir, showDirCallback);
   };
+  
+  mm.resize = function(e) {
+    if ( $(window).width() < $('#listing').outerWidth(true) + $('#playlist').outerWidth(true) ) {
+      $('#playlist').addClass('smallDisplay');
+    } else {
+      $('#playlist').removeClass('smallDisplay');
+    }
+  }
 }();
 
 ~function() {
@@ -133,7 +141,6 @@
   
     $('#play').button({ text: false, disabled: true, icons: {primary:'ui-icon-play'}}).click(mm.player.play);
     $('#pause').button({ text: false, disabled: true, icons: {primary:'ui-icon-pause'}}).click(mm.player.pause);
-    $('#stop').button({ text: false, disabled: true, icons: {primary:'ui-icon-stop'}}).click(mm.player.stop);
     $('#mute').button({ text: false, icons: {primary:'ui-icon-volume-on'}}).click(mm.player.toggleMute);
     $('#prev').button({ text: false, icons: {primary:'ui-icon-seek-prev'}}).click(mm.player.prevSong);
     $('#next').button({ text: false, icons: {primary:'ui-icon-seek-next'}}).click(mm.player.nextSong);
@@ -167,7 +174,7 @@
     }
     
     playerHnd.jPlayer("play");
-    $('#play, #pause, #stop').button('option', 'disabled', false );
+    $('#play, #pause').button('option', 'disabled', false );
     
     showPauseBtn();
     return false;
@@ -176,8 +183,7 @@
   mod.setInfo = function(o) {
     var str = '<strong>Now Playing:</strong> '+
       ((o.id3_title) ? o.id3_title : o.file) +
-      ((o.id3_artist) ? ' <em>by</em> '+ o.id3_artist : '') +
-      ((o.id3_album) ? ' <em>from the album</em> '+ o.id3_album : '');
+      ((o.id3_artist) ? ' <em>by</em> '+ o.id3_artist : '');
     $('#nowplaying').html(str);
     if (o.art) {
       $('#art img').attr('src', '/pic/'+o.id).show();
@@ -190,12 +196,6 @@
     playerHnd.jPlayer("pause");
     showPlayBtn();
     return false;
-  };
-  
-  mod.stop = function() {
-      playerHnd.jPlayer("stop");
-      showPlayBtn();
-      return false;
   };
   
   mod.prevSong = function() {
@@ -274,9 +274,44 @@
       e.text(mod.playlist[i].file);
       playlist_div.append(e);
     };
+    $(window).trigger('resize');
   };
   
 }();
+
+~function () {
+    var mod = {};
+    mm.signal = mod;
+    
+    var signals = [];
+    
+    mod.register = function (f, s) {
+        if (!signals[s]) {
+            signals[s] = [];
+        }
+        signals[s].push(f);
+    };
+    
+    mod.send = function(s, data) {
+        if (signals[s] && signals[s].length > 0) {
+            var len = signals[s].length;
+            
+            var o = $.extend({}, data);
+            o.type = s;
+            
+            for (var i=0; i<len; i++) {
+                signals[s][i].apply(undefined, [o]);
+            }
+        }
+        
+        return len;
+    };
+    
+    mod.remove = function(f, s) {
+        
+    };
+}();
+
 
 // Simple JavaScript Templating
 // John Resig - http://ejohn.org/ - MIT Licensed
@@ -323,4 +358,6 @@ $(document).ready(function() {
     .ajaxStop(function() { $(this).show(); } );
 
   $.address.change(mm.pageHistory);
+  
+  $(window).resize(mm.resize);
 });
