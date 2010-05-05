@@ -46,7 +46,7 @@ class Sequel::Model
 end
 
 def list_by_path(path)
-  $db[:songs].filter(:path => path).order('folder DESC, id3_track, file')
+  $db[:songs].filter(:path => path).order(:folder.desc).order_more(:id3_track).order_more(:file)
 end
 
 # library generation

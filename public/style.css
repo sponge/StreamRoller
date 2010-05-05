@@ -27,7 +27,6 @@ a:hover {
 }
 
 #listing table {
-  min-width: 450px;
 }
 
 #listing tr:hover {
@@ -45,11 +44,16 @@ a:hover {
   background-color: #333;
 }
 
+#playlist .list div {
+  cursor: pointer;
+}
+
 #body {
   clear: both;
 }
 
 .smallDisplay {
+  margin-top: 1em !important;
   float: left !important;
   max-height: 200px;
   overflow-y: scroll;
