@@ -1,16 +1,21 @@
+$:.unshift File.join('lib/ruby')
+
 require 'rubygems'
-gem 'jdbc-sqlite3'
+require 'jdbc/sqlite3'
 require 'sequel'
 require 'sinatra'
 require 'yaml'
 require 'pp'
 require 'json'
 require 'timeout'
+
 require 'java'
 require 'lib/java/jaudiotagger-2.0.2.jar'
+require 'lib/java/sqlitejdbc-3.6.3.054.jar'
+import 'org.sqlite.JDBC' 
+
 require 'src/utils'
 require 'src/library'
-
 include Utils, Library
 
 # check environment
@@ -23,7 +28,6 @@ else
 end
 
 $db = Sequel.connect('jdbc:sqlite:library.sqlite')
-songs_table = $db[:songs]
 
 class Song
   def to_json
