@@ -75,8 +75,8 @@ module Library
           m.update(art.getBinaryData())
           md5 = java.math.BigInteger.new(m.digest()).toString(16).slice(-8,8)
           ext = art.getMimeType().to_s.split('/')[1]
-          filename = "#{md5}.#{mime}"
-          Song.update(song.id, :art => ext)
+          filename = "#{md5}.#{ext}"
+          Song.update(song.id, :art => filename)
           if (!File.exists? "art/#{filename}")
             f = java.io.File.new("art/#{filename}")
             fos = java.io.FileOutputStream.new(f)
