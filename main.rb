@@ -1,5 +1,6 @@
 require 'rubygems'
-require 'jdbc_adapter'
+gem 'jdbc-sqlite3'
+require 'sequel'
 require 'sinatra'
 require 'yaml'
 require 'pp'
@@ -21,39 +22,46 @@ else
   exit -1
 end
 
-# init db
-db = ActiveRecord::Base.establish_connection(
-  :adapter => 'sqlite3',
-  :database => config['db']
-)
+$db = Sequel.connect('jdbc:sqlite:library.sqlite')
+songs_table = $db[:songs]
 
-# models
-class Song < ActiveRecord::Base
-  def self.list_by_path(path)
-    self.find(:all, :conditions => { :path => path }, :order => 'folder DESC, id3_track, file' )
+class Song
+  def to_json
+    to_s.to_json
+  end
+end
+class Sequel::Dataset
+  def to_json
+    naked.all.to_json
+  end
+end
+class Sequel::Model
+  def self.to_json
+    dataset.to_json
   end
 end
 
+def list_by_path(path)
+  $db[:songs].filter(:path => path).order('folder DESC, id3_track, file')
+end
+
 # library generation
-if !Song.table_exists? or !config['skip_discovery']
-  puts "Table not found, creating and forcing library discovery" if !Song.table_exists?
+if !$db.table_exists?(:songs) or !config['skip_discovery']
+  puts "Table not found, creating and forcing library discovery" if !$db.table_exists?(:songs)
   FileUtils.mkdir('art') if !File.directory?('art')
-  ActiveRecord::Base.connection.execute('DROP TABLE IF EXISTS songs;')
-  ActiveRecord::Base.connection.execute('
-    CREATE TABLE "songs" (
-      "id" INTEGER PRIMARY KEY AUTOINCREMENT,
-      "path" TEXT NOT NULL,
-      "file" TEXT NOT NULL,
-      "folder" BOOL NOT NULL DEFAULT f,
-      "length" INTEGER,
-      "art" TEXT,
-      "id3_track" INTEGER,
-      "id3_artist" TEXT,
-      "id3_album" TEXT,
-      "id3_title" TEXT,
-      "id3_date" TEXT
-    )   
-  ')
+  $db.create_table! :songs do
+    primary_key :id
+    String :path, :null => false
+    String :file, :null => false
+    boolean :folder, :default => false
+    integer :length
+    String :art
+    integer :id3_track
+    String :id3_artist
+    String :id3_album
+    String :id3_title
+    String :id3_date
+  end
   Library::scan(config['location'])
 end
 
@@ -67,18 +75,16 @@ get '/' do
 end
 
 get '/list/?*/?' do
-  ActiveRecord::Base.clear_reloadable_connections!
   Timeout.timeout(10) do
     path = Utils::sanitize params[:splat].join('')   
     redirect('/#'+path) if !request.xhr?
-    files = Song.list_by_path(path)
+    files = list_by_path(path)
     
-    Utils::trim_response(files).to_json;
+    Utils::trim_response(files.to_json).to_json
   end
 end
 
 get '/browse/?' do
-  ActiveRecord::Base.clear_reloadable_connections!
   Timeout.timeout(10) do
     whereartist = (!params[:artist].to_s.empty?) ? 'WHERE id3_artist = :artist ' : ''
     
@@ -98,20 +104,18 @@ end
 
 get '/get/:id' do |n|
   # find song, and just send the file
-  ActiveRecord::Base.clear_reloadable_connections!
   Timeout.timeout(10) do
-    f = Song.find(params[:id])
-    filepath = config['location'] + f.path + '/' + f.file
-    send_file filepath, :filename => f.file
+    f = $db[:songs].filter(:id => params[:id]).first()
+    filepath = config['location'] + f[:path] + '/' + f[:file]
+    send_file filepath, :filename => f[:file]
   end
 end
 
 get '/pic/:id' do |n|
-  ActiveRecord::Base.clear_reloadable_connections!
   Timeout.timeout(10) do
-    f = Song.find(params[:id])
-    return false if f.art == 'f'
-    send_file "art/#{f.art}"
+    f = $db[:songs].filter(:id => params[:id]).first()
+    return false if f[:art] == 'f'
+    send_file "art/#{f[:art]}"
   end
 end
 

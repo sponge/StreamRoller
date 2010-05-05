@@ -26,7 +26,7 @@ module Library
   def scan(dir)
     beginTime = Time.now.to_i
     
-    Song.delete_all
+    songs = $db[:songs]
     Dir.chdir(dir) do
       files = []
       Dir['{**/*/,**/*.mp3}'].each do |file|
@@ -34,7 +34,7 @@ module Library
       end
       
       len = files.length
-      ActiveRecord::Base.transaction do
+      $db.transaction do
         files.each_index do |i|
           puts i.to_s + '/' + len.to_s if (i % 100 == 0)
           
@@ -51,7 +51,7 @@ module Library
           
           begin
             fields.merge!({ 'folder' => File.directory?(file), 'path' => File.dirname(file), 'file' => File.basename(file) })
-            Song.create(fields)
+            songs << fields
           rescue
             puts "error adding file or folder: #{file} (#{$!})"
             next
@@ -66,17 +66,18 @@ module Library
   end
   
   def scan_album_art(base)
-    songs = Song.find(:all, :conditions => { :art => nil, :folder => 'f' })
+    #songs = Song.find(:all, :conditions => { :art => nil, :folder => 'f' })
+    songs = $db[:songs].where(:art => nil, :folder => 'f')
     songs.each do |song|      
       begin
-        art = read_file(base + song.path.to_s + '/' + song.file.to_s).getTag().getFirstArtwork()
+        art = read_file(base + song[:path] + '/' + song[:file]).getTag().getFirstArtwork()
         if (art)
           m = java.security.MessageDigest.getInstance('MD5')
           m.update(art.getBinaryData())
           md5 = java.math.BigInteger.new(m.digest()).toString(16).slice(-8,8)
           ext = art.getMimeType().to_s.split('/')[1]
           filename = "#{md5}.#{ext}"
-          Song.update(song.id, :art => filename)
+          $db[:songs].filter(:id => song[:id]).update(:art => filename)
           if (!File.exists? "art/#{filename}")
             f = java.io.File.new("art/#{filename}")
             fos = java.io.FileOutputStream.new(f)

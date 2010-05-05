@@ -6,8 +6,7 @@ module Utils
   end
 
   def trim_response(arr)
-    # FIXME: this is really stupid - strip values that are blank or default
-    arr = JSON.parse(arr.to_json)
+    arr = JSON.parse(arr)
     arr.each do |hash|
       hash.each do |k,v|
         hash.delete(k) if v == '' || v == nil || (k == 'folder' && v == 'f') || (k == 'art' && v == 'f')
