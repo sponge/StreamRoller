@@ -23,7 +23,7 @@ module Library
     return tags
   end
   
-  def scan(dir)
+  def scan(dir)    
     beginTime = Time.now.to_i
     
     songs = $db[:songs]
