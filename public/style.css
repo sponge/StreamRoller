@@ -5,7 +5,6 @@ body {
   margin: 0;
   padding: 0;
   font-size: 0.8em;
-  margin-top: 1em;
 }
 
 a {
@@ -50,6 +49,7 @@ a:hover {
 
 #body {
   clear: both;
+  margin-top: 140px;
 }
 
 .smallDisplay {
@@ -62,24 +62,30 @@ a:hover {
 
 /* controls */
 #controls {
+  background-color: #151515;
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 450px;
-  height: 75px;
-  margin-left: 2em;
+  height: 125px;
+  padding: 10px 20px 10px 20px;
 }
 
 #playback {
-
+  float: right;
+  width: 365px;
 }
+
+.playbackBig {
+  width: 95% !important;
+}
+
 #art {
   width: 75px;
   height: 75px;
   margin-right: 0.4em;
   float: left;
-  background-color: #111;
-}
-
-#art img {
-  display: none;
+  background: url('placeholder.png') #111111;
 }
 
 #nowplaying {
@@ -113,7 +119,7 @@ a:hover {
 }
 
 #bars_holder {
-  width:362px;
+  width: 100%;
   float: right;
   margin: 6px 0;
 }

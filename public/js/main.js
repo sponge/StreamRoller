@@ -19,7 +19,7 @@
   };
   
   mm.clickRow = function(e) {
-    var o = currData[this.getAttribute('rel')];
+    var o = currData[this.getAttribute('data-rowindex')];
     if (!o) {
       window.location.hash = mm.utils.findParentDir(window.location.hash);
       return false;
@@ -183,8 +183,12 @@
       ((o.id3_artist) ? ' <em>by</em> '+ o.id3_artist : '');
     $('#nowplaying').html(str);
     if (o.art) {
+      //$('#art').show().find('img').attr('src', '/pic/'+o.id);
+      //$('#playback').removeClass('playbackBig');
       $('#art img').attr('src', '/pic/'+o.id).show();
     } else {
+      //$('#art').hide().find('img').attr('src', '');
+      //$('#playback').addClass('playbackBig');
       $('#art img').attr('src', '').hide();
     }
   };
@@ -213,11 +217,11 @@
   }
   
   mod.prevSong = function() {
-    mod.play(mm.playlist.prevSong());
+    mod.load(mm.playlist.prevSong());
   };
   
   mod.nextSong = function() {
-    mod.play(mm.playlist.nextSong());
+    mod.load(mm.playlist.nextSong());
     
   };
   
@@ -287,7 +291,7 @@
         
       }
       e.text(mod.playlist[i].file)
-       .attr('rel',i)
+       .attr('data-rowindex',i)
        .bind('click', mod.playlistSkip);
       playlist_div.append(e);
     };
@@ -295,9 +299,8 @@
   };
   
   mod.playlistSkip = function(e) {
-    var rel = $(e.target).attr('rel');
-    mm.player.load( mod.skip(mod.playlist[rel]) );
-    
+    var i = $(e.target).attr('data-rowindex');
+    mm.player.load( mod.skip(mod.playlist[i]) );
   };
   
 }();
