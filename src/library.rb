@@ -39,7 +39,7 @@ module Library
       len = files.length
       $db.transaction do
         files.each_index do |i|
-          puts i.to_s + '/' + len.to_s if (i % 100 == 0)
+          puts "#{i.to_s}/#{len.to_s} songs scanned" if (i % 100 == 0)
           
           file = files[i]
           fields = {}

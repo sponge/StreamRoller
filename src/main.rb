@@ -85,7 +85,10 @@ class MediaStreamer < Sinatra::Base
       redirect('/#'+path) if !request.xhr?
       files = list_by_path(path)
       
-      Utils::trim_response(files.to_json).to_json
+      json = Utils::trim_response(files.to_json).to_json
+      
+      return "#{params[:callback]}(#{json})" if params[:callback]
+      return json
     end
   end
   
