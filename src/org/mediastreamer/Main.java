@@ -15,8 +15,7 @@ import org.jruby.javasupport.JavaEmbedUtils;
 
 public class Main
 {
-
-  public static JTextArea textArea = new JTextArea();
+  
   private static Boolean useConsole = false;
   public static void main(String[] args) throws Exception
   {
@@ -31,26 +30,11 @@ public class Main
 
     if (useConsole == false) {
       JFrame frame = new JFrame("MediaStreamer");
-      
-      textArea.setEditable(false);
-      textArea.setLineWrap(true);
-      frame.getContentPane().add(textArea);
-      
-      frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-      frame.setSize(640,480);
-      frame.setVisible(true);
-      frame.setResizable(true);
-      
-      new Console(textArea);
-      
-      if (SystemTray.isSupported()) {
-        System.out.println("can init system tray");
-      } else {
-        System.out.println("System tray icon not supported by environment.");
-      }
+      MainUI mainui = new MainUI(frame);
     }
     
-    System.out.println("Now loading MediaStreamer");
+    System.out.println("Now loading MediaStreamer...");
+    
     RubyInstanceConfig config = new RubyInstanceConfig();
     config.setArgv(args);
     Ruby runtime = JavaEmbedUtils.initialize(new ArrayList(0), config);
@@ -75,17 +59,17 @@ public class Main
     }
 
     for(String line : config_data) {
-        String[] parts = line.split(":");
-        if("main_ruby_file".equals(parts[0].replaceAll(" ", ""))) {
-            mainRubyFile = parts[1].replaceAll(" ", "");
-        }
+      String[] parts = line.split(":");
+      if("main_ruby_file".equals(parts[0].replaceAll(" ", ""))) {
+        mainRubyFile = parts[1].replaceAll(" ", "");
+      }
     }
 
     runtime.evalScriptlet("require '" + mainRubyFile + "'");
   }
 
   public static URL getResource(String path) {
-      return Main.class.getClassLoader().getResource(path);
+    return Main.class.getClassLoader().getResource(path);
   }
   
   private static ArrayList<String> getConfigFileContents(InputStream input) throws IOException, java.lang.NullPointerException {

@@ -1,3 +1,6 @@
+require 'lib/java/jaudiotagger-2.0.2.jar'
+require 'lib/java/sqlitejdbc-3.6.3.054.jar'
+
 module Library
 
   import 'org.jaudiotagger.audio.AudioFileIO'

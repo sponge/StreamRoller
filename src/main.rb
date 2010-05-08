@@ -8,8 +8,6 @@ require 'json'
 require 'timeout'
 
 require 'java'
-require 'lib/java/jaudiotagger-2.0.2.jar'
-require 'lib/java/sqlitejdbc-3.6.3.054.jar'
 import 'org.sqlite.JDBC' 
 require 'utils'
 require 'library'
@@ -24,15 +22,7 @@ else
   exit -1
 end
 
-$db = Sequel.connect('jdbc:sqlite:library.sqlite')
-
-#class JavaOutputter
-#  def write(str)
-#    STDOUT.write(" " + str.split("\n").join("\n"));
-#  end
-#end
-#
-#$stdout = JavaOutputter.new
+$db = Sequel.connect("jdbc:sqlite:#{$config['db']}")
 
 class Song
   def to_json
