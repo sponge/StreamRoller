@@ -47,7 +47,6 @@ end
 # library generation
 if !$db.table_exists?(:songs) or !$config['skip_discovery']
   puts "Table not found, creating and forcing library discovery" if !$db.table_exists?(:songs)
-  FileUtils.mkdir('art') if !File.directory?('art')
   $db.create_table! :songs do
     primary_key :id
     String :path, :null => false
@@ -64,7 +63,8 @@ if !$db.table_exists?(:songs) or !$config['skip_discovery']
   Library::scan($config['location'])
 end
 
-Thread.new { Library::scan_album_art($config['location']) } if ($config['skip_ablum_art'])
+FileUtils.mkdir('art') if !File.directory?('art')
+Thread.new { Library::scan_album_art($config['location']) } if (!$config['skip_ablum_art'])
 
 # =============
 #  main routes
@@ -120,7 +120,11 @@ class MediaStreamer < Sinatra::Base
     Timeout.timeout(10) do
       f = $db[:songs].filter(:id => params[:id]).first()
       return false if f[:art] == 'f'
-      send_file "art/#{f[:art]}"
+      begin
+        send_file "art/#{f[:art]}"
+      rescue
+        puts "Error sending album art: #{$!}"
+      end
     end
   end
   
