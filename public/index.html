@@ -9,7 +9,14 @@
   <script type="text/javascript" src="/js/lib/jquery-ui-1.8.1.custom.min.js"></script>
   <script type="text/javascript" src="/js/lib/jquery.address-1.2rc.min.js"></script>
   <script type="text/javascript" src="/js/lib/jquery.jplayer.min.js"></script>
+  <script type="text/javascript" src="/js/lib/jquery.tablednd_0_5.js"></script>
+  
   <script type="text/javascript" src="/js/main.js"></script>
+  <script type="text/javascript" src="/js/utils.js"></script>
+  <script type="text/javascript" src="/js/signal.js"></script>
+  <script type="text/javascript" src="/js/player.js"></script>
+  <script type="text/javascript" src="/js/playlist.js"></script>
+  
 </head>
 <body>
 
@@ -23,16 +30,12 @@
       </tr>
     </thead>
     <tbody>
-      <tr><td>..</td><td><%= mm.utils.generateLink('folder', '#'+ parent, 'Parent Directory' ) %></td></tr>
+      <tr><td>..</td><td>Parent Directory</td></tr>
       <% for (var i=0; data[i]; i++) { var f = data[i]; %>
         <tr data-rowindex="<%= i %>">
           <% for (var j=0; columns[j]; j++) { %>
-            <% if (columns[j] == 'file' || columns[j] == 'id3_title') { %>
-              <%
-                f.path = (f.path === '.') ? '' : f.path;
-                var link = (f.folder) ? mm.utils.generateLink('folder', '#'+ f.path +'/'+ f.file, f.file) : mm.utils.generateLink('media', '/get/'+ f.id, f[columns[j]]);
-              %>
-              <td><%= link %></td>
+            <% if ((columns[j] == 'file' || columns[j] == 'id3_title') && f.folder) { %>
+              <td><%= f.file %></td>
             <%} else { %>
               <td><%=f[columns[j]]%></td>
             <% } %>

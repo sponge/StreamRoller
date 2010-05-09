@@ -60,6 +60,14 @@ a:hover {
   width: 450px;
 }
 
+#playlist .list table tbody tr {
+  cursor: pointer;
+}
+
+#playlist td.handle {
+  cursor: n-resize;
+}
+
 /* controls */
 #controls {
   background-color: #151515;
