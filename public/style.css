@@ -157,3 +157,19 @@ a:hover {
 .ui-slider-handle {
   cursor: pointer;
 }
+
+/* Settings dialog */
+
+#settings {
+  display: none;
+}
+
+#simplemodal-overlay {
+  background-color: black;
+}
+
+#simplemodal-container {
+  background-color: #111;
+  border: 8px solid #222;
+  padding: 1em 2em 1em 2em;
+}

@@ -6,6 +6,11 @@ mm.playlist = mod;
 var playlist = [];
 var curr = 0;
 
+mod.init = function() {
+  mm.signal.register('songChanged', mod.drawPlaylist);
+  mm.signal.register('playlistChanged', mod.drawPlaylist);
+}
+
 mod.new = function(arr) {
   playlist = arr;
   curr = 0;
@@ -91,8 +96,5 @@ mod.deleteSong = function(e) {
   mm.signal.send('playlistChanged');
   return false;
 }
-
-mm.signal.register('songChanged', mod.drawPlaylist);
-mm.signal.register('playlistChanged', mod.drawPlaylist);
 
 }();

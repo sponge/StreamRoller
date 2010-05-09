@@ -103,9 +103,7 @@ $(document).ready(function() {
   if (!window.console) {
     window.console = { log: function(){}, dir: function(){} };
   }
-  
-  mm.player.init();
-  
+    
   $('#listing')
     .ajaxStart(function() { $(this).hide(); } )
     .ajaxStop(function() { $(this).show(); } );
@@ -113,4 +111,9 @@ $(document).ready(function() {
   $.address.change(mm.pageHistory);
   
   $(window).resize(mm.resize);
+  
+  mm.player.init();
+  mm.settings.init();
+  mm.playlist.init();
+  
 });
