@@ -14,7 +14,6 @@
     currData = data;
     var table = $(mm.tmpl('tmpl_mediatable', {data: data, columns: columns, headers: headers, parent: mm.utils.findParentDir(dir) }));
     $(table).find('tbody tr').bind('click', mm.clickRow);
-    $(table).width( ($(table).width() > 450 ) ? $(table).width() : 450 );
     return table;
   };
   

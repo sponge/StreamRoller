@@ -26,6 +26,7 @@ a:hover {
 }
 
 #listing table {
+  min-width: 450px;
 }
 
 #listing tr:hover {

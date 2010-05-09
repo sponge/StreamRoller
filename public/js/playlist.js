@@ -3,47 +3,47 @@
 var mod = {};
 mm.playlist = mod;
 
-mod.playlist = [];
-mod.curr = 0;
+var playlist = [];
+var curr = 0;
 
 mod.new = function(arr) {
-  mod.playlist = arr;
-  mod.curr = 0;
+  playlist = arr;
+  curr = 0;
   mm.signal.send('playlistChanged');
 }
 
 mod.nextSong = function() {
-  mod.curr = Math.abs((mod.curr + 1) % (mod.playlist.length));
+  curr = Math.abs((curr + 1) % (playlist.length));
   mm.signal.send('playlistChanged');
-  return mod.playlist[mod.curr];
+  return playlist[curr];
 };
 
 mod.prevSong = function() {
-  if (mod.curr - 1 < 0) mod.curr = mod.playlist.length;
-  mod.curr = Math.abs((mod.curr - 1) % (mod.playlist.length));
+  if (curr - 1 < 0) curr = playlist.length;
+  curr = Math.abs((curr - 1) % (playlist.length));
   mm.signal.send('playlistChanged');
-  return mod.playlist[mod.curr];
+  return playlist[curr];
 };
 
 mod.skip = function(i) {
-  mod.curr = i;
-  mm.player.currSong = mod.playlist[i];
+  curr = i;
+  mm.player.currSong = playlist[i];
   mm.signal.send('playlistChanged');
-  return mod.playlist[i];
+  return playlist[i];
 };
 
 mod.drawPlaylist = function() {
   var playlist_div = $('#playlist .list').html('<table><tbody></tbody></table>');
   var tbody = playlist_div.find('table > tbody');
-  for (var i=0; mod.playlist[i]; i++) {
+  for (var i=0; playlist[i]; i++) {
     var e = $('<tr>');
     e.attr('data-rowindex',i)
       .bind('click', mod.playlistSkip)
       .bind('contextmenu', mod.deleteSong);
-    if (mod.curr == i && mm.player.currSong.id == mod.playlist[i].id) {
+    if (curr == i && mm.player.currSong.id == playlist[i].id) {
       e.addClass('selected');
     }
-    e.append('<td class="handle">h</td><td>'+ mod.playlist[i].file +'</td>')
+    e.append('<td class="handle">h</td><td>'+ playlist[i].file +'</td>')
      
     playlist_div.find('table').tableDnD({
       onDrop: mod.sortChange,
@@ -64,23 +64,30 @@ mod.sortChange = function(table, row) {
   var newPlaylist = [];
   for (var i=0; rows[i]; i++) {
     var oldIndex = $(rows[i]).attr('data-rowindex');
-    newPlaylist[i] = mod.playlist[oldIndex];
+    newPlaylist[i] = playlist[oldIndex];
   }
   mod.new(newPlaylist);
 };
 
 mod.addSong = function(o) {
-  mod.playlist.push(o);
-  var len = mod.playlist.length;
-  if (len == 1) {
-    mm.player.load(mod.skip(len-1));
+  var len = playlist.length;
+  if (typeof o == 'array') {
+    playlist = playlist.concat(o);
+  } else {
+    playlist.push(o);
+  }
+  if (len == 0) {
+    mm.player.load(mod.skip(0));
   }
   mm.signal.send('playlistChanged');
 }
 
 mod.deleteSong = function(e) {
   var i = $(e.currentTarget).attr('data-rowindex');
-  mod.playlist.splice(i, 1);
+  if (i <= curr) {
+    curr--;
+  }
+  playlist.splice(i, 1);
   mm.signal.send('playlistChanged');
   return false;
 }
