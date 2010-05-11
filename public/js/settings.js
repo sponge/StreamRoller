@@ -7,9 +7,22 @@ mod.init = function() {
 };
 
 mod.show = function() {
-  $('#settings').modal({
-    opacity: 80
-  });
+  $('#settings').dialog({
+		resizable: false,
+    width: 450,
+		height: 140,
+		modal: true,
+    draggable: false,
+    title: 'MediaStreamer Settings',
+		buttons: {
+      OK: function() {
+				$(this).dialog('close');
+			},
+			Cancel: function() {
+				$(this).dialog('close');
+			}
+		}
+	});
 };
 
 }();

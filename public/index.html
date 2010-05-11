@@ -12,7 +12,6 @@
   <script type="text/javascript" src="/js/lib/jquery.address-1.2rc.min.js"></script>
   <script type="text/javascript" src="/js/lib/jquery.jplayer.min.js"></script>
   <script type="text/javascript" src="/js/lib/jquery.tablednd_0_5.js"></script>
-  <script type="text/javascript" src="/js/lib/jquery.simplemodal-1.3.5.min.js"></script>
   
   <script type="text/javascript" src="/js/main.js"></script>
   <script type="text/javascript" src="/js/utils.js"></script>
@@ -55,11 +54,20 @@
   <p>lorem ipsum</p>
 </div>
 
+<div id="playlist-settings">
+  <ul>
+    <li>Add current folder</li>
+    <li>Clear</li>
+    <li>Download .M3U</li>
+  </ul>
+</div>
+
 <div id="controls">
   <div id="jquery_jplayer"></div>
   <div id="nowplaying">&nbsp;</div>
   <div id="art"><img src="" width="75" height="75"/></div>
   <div id="playback">
+    <div id="time">&nbsp;</div>
     <div id="bars_holder">
       <div id="sliderPlayback"></div>
       <div id="loaderBar"></div>
@@ -78,10 +86,13 @@
 
 <div id="body">
   <div id="playlist">
-    <span>Current Playlist:</span>
+    <div class="section_header expanded_header">Playlist <a href="#" class="options">(opt)</a></div>
     <div class="list"></div>
   </div>
-  <div id="listing"></div>
+  <div id="browser">
+    <div class="section_header expanded_header">Browser</div>
+    <div id="listing"></div>
+  </div>
 </div>
 
 </body>

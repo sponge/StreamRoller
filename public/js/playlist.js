@@ -11,7 +11,7 @@ mod.init = function() {
   mm.signal.register('playlistChanged', mod.drawPlaylist);
 }
 
-mod.new = function(arr) {
+mod.newList = function(arr) {
   playlist = arr;
   curr = 0;
   mm.signal.send('playlistChanged');
@@ -48,13 +48,13 @@ mod.drawPlaylist = function() {
     if (curr == i && mm.player.currSong.id == playlist[i].id) {
       e.addClass('selected');
     }
-    e.append('<td class="handle">h</td><td>'+ playlist[i].file +'</td>')
-     
+    e.append('<td class="handle">&nbsp;</td><td>'+ playlist[i].file +'</td>')
+    tbody.append(e);
+    
     playlist_div.find('table').tableDnD({
       onDrop: mod.sortChange,
       dragHandle: 'handle'
     });
-    tbody.append(e);
   };
   $(window).trigger('resize');
 };
@@ -71,7 +71,7 @@ mod.sortChange = function(table, row) {
     var oldIndex = $(rows[i]).attr('data-rowindex');
     newPlaylist[i] = playlist[oldIndex];
   }
-  mod.new(newPlaylist);
+  mod.newList(newPlaylist);
 };
 
 mod.addSong = function(o) {

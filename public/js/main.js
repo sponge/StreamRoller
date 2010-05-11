@@ -63,6 +63,7 @@
     } else {
       $('#playlist').removeClass('smallDisplay');
     }
+    $('#playlist-settings').hide();
   }
 }();
 
@@ -107,6 +108,22 @@ $(document).ready(function() {
   $('#listing')
     .ajaxStart(function() { $(this).hide(); } )
     .ajaxStop(function() { $(this).show(); } );
+    
+  $('.section_header').bind('click', function(e) {
+    $(this).toggleClass('expanded_header');
+    $(this).next().slideToggle('fast');
+  });
+  
+  $('#playlist .section_header .options').bind('click', function(e) {
+    $('#playlist-settings').toggle()
+      .position({
+        my: 'right top',
+        at: 'right top',
+        of: e,
+        offset: '-15 15'
+      });
+      e.stopPropagation();
+  });
 
   $.address.change(mm.pageHistory);
   
@@ -115,5 +132,7 @@ $(document).ready(function() {
   mm.player.init();
   mm.settings.init();
   mm.playlist.init();
+  
+  if ( window.innerWidth < 1000 ) $('#playlist').addClass('smallDisplay');
   
 });

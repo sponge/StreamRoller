@@ -16,9 +16,10 @@ a:hover {
   border-bottom: 1px dotted #00FFFF;
 }
 
-#listing {
+#browser {
   float: left;
-  margin: 0em 2em 0 2em;
+  margin: 0em 2em 0;
+  min-width: 450px;
 }
 
 #listing th, #listing td {
@@ -37,7 +38,7 @@ a:hover {
 #playlist {
   float: right;
   margin: 0em 2em 1em 2em;
-  max-width: 450px;
+  width: 450px;
 }
 
 #playlist .list .selected {
@@ -48,17 +49,28 @@ a:hover {
   cursor: pointer;
 }
 
+#playlist tr td.handle {
+  width: 16px;
+}
+
+#playlist tr:hover td.handle {
+  background-color: #006;
+}
+
 #body {
   clear: both;
-  margin-top: 140px;
+  margin-top: 150px;
 }
 
 .smallDisplay {
   margin-top: 1em !important;
   float: left !important;
   max-height: 200px;
-  overflow-y: scroll;
   width: 450px;
+}
+
+.smallDisplay .list {
+  overflow-y: scroll;
 }
 
 #playlist .list table tbody tr {
@@ -67,6 +79,12 @@ a:hover {
 
 #playlist td.handle {
   cursor: n-resize;
+}
+
+.section_header {
+  background-color: #333;
+  padding: 3px 0 3px 6px;
+  cursor: pointer;
 }
 
 /* controls */
@@ -99,6 +117,10 @@ a:hover {
 
 #nowplaying {
   margin: 1em 0 0.75em 0;
+}
+
+#time {
+  text-align: right;
 }
 
 #volume {
@@ -160,16 +182,29 @@ a:hover {
 
 /* Settings dialog */
 
-#settings {
+#playlist-settings, #settings {
   display: none;
 }
 
-#simplemodal-overlay {
-  background-color: black;
+#playlist-settings {
+  position: absolute;
+  background-color: white;
+  color: black;
 }
 
-#simplemodal-container {
+#playlist-settings ul {
+  width: 125px;
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+#playlist-settings ul li {
+  padding: 5px 0 5px 5px;
+}
+
+#playlist-settings ul li:hover {
   background-color: #111;
-  border: 8px solid #222;
-  padding: 1em 2em 1em 2em;
+  color: white;
+  cursor: pointer;
 }

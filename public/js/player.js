@@ -34,6 +34,8 @@ mod.init = function() {
 
     $('#loaderBar').progressbar('option', 'value', lpInt % 100);
     $('#sliderPlayback').slider('option', 'value', ppaInt);
+    
+    $('#time').text(mm.utils.formatTime(pt) +'/'+ mm.utils.formatTime(tt));
   })
   .jPlayer("onSoundComplete", function() {
     mm.player.load(mm.playlist.nextSong());
