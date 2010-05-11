@@ -117,10 +117,10 @@ $(document).ready(function() {
   $('#playlist .section_header .options').bind('click', function(e) {
     $('#playlist-settings').toggle()
       .position({
-        my: 'right top',
-        at: 'right top',
+        my: 'left top',
+        at: 'left top',
         of: e,
-        offset: '-15 15'
+        offset: '15 15'
       });
       e.stopPropagation();
   });
