@@ -124,10 +124,6 @@ $(document).ready(function() {
   if (!window.console) {
     window.console = { log: function(){}, dir: function(){} };
   }
-
-  $('#listing')
-    .ajaxStart(function() { $(this).text(''); } )
-    .ajaxStop(function() { $(this).show(); } );
     
   $('.section_header').bind('click', function(e) {
     $(this).toggleClass('expanded_header');

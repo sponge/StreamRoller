@@ -102,7 +102,11 @@ mod.deleteSong = function(e) {
 };
 
 mod.generateM3U = function() {
-  var oldloc = window.location.href;
+  if (playlist.length === 0) {
+    alert('Add some songs before genearting a playlist');
+    return false;
+  }
+  
   var m3u = ['#EXTM3U'];
   for (var i=0; playlist[i]; i++) {
     var f = playlist[i];

@@ -113,7 +113,7 @@ class MediaStreamer < Sinatra::Base
     end
   end
   
-  get '/get/:id' do |n|
+  get '/get/:id' do
     # find song, and just send the file
     Timeout.timeout(10) do
       f = $db[:songs].filter(:id => params[:id]).first()
@@ -122,7 +122,7 @@ class MediaStreamer < Sinatra::Base
     end
   end
   
-  get '/pic/:id' do |n|
+  get '/pic/:id' do
     Timeout.timeout(10) do
       f = $db[:songs].filter(:id => params[:id]).first()
       return false if f[:art] == 'f'
@@ -134,13 +134,13 @@ class MediaStreamer < Sinatra::Base
     end
   end
   
-  get '/m3u' do |n|
+  get '/m3u' do
     content_type 'application/x-winamp-playlist'
     attachment 'playlist.m3u'
     session[:playlist]
   end
   
-  post '/m3u' do |n|
+  post '/m3u' do
     session[:playlist] = params[:playlist]
   end
   
