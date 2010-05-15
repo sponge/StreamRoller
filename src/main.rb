@@ -8,7 +8,9 @@ require 'json'
 require 'timeout'
 
 require 'java'
-import 'org.sqlite.JDBC' 
+import 'org.sqlite.JDBC'
+
+$:.push('src/') if (File.exists? 'src/')
 require 'utils'
 require 'library'
 include Utils, Library
@@ -74,6 +76,7 @@ class MediaStreamer < Sinatra::Base
   
   set :static, true
   set :public, 'public/'
+  set :sessions, true
   
   get '/' do
     send_file 'public/index.html'
@@ -129,6 +132,16 @@ class MediaStreamer < Sinatra::Base
         puts "Error sending album art: #{$!}"
       end
     end
+  end
+  
+  get '/m3u' do |n|
+    content_type 'application/x-winamp-playlist'
+    attachment 'playlist.m3u'
+    session[:playlist]
+  end
+  
+  post '/m3u' do |n|
+    session[:playlist] = params[:playlist]
   end
   
   get '/*' do

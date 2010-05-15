@@ -11,7 +11,6 @@
   };
   
   mm.renderTable = function(dir, data, columns, headers) {
-    currData = data;
     var table = $(mm.tmpl('tmpl_mediatable', {data: data, columns: columns, headers: headers, parent: mm.utils.findParentDir(dir) }));
     $(table).find('tbody tr').bind('click', mm.clickRow);
     return table;
@@ -44,6 +43,7 @@
         alert('Failed');
         return;
       }
+      currData = data;
       var content = mm.renderTable(dir, data, defaultCols, defaultLabels);
       $(div).html(content);
       
@@ -58,13 +58,33 @@
   };
   
   mm.resize = function(e) {
-    if ( $(window).width() < $('#listing').outerWidth(true) + $('#playlist').outerWidth(true) ) {
+    if ( $(window).width() < $('#browser').outerWidth(true) + $('#playlist').outerWidth(true) - 5) {
       $('#playlist').addClass('smallDisplay');
     } else {
       $('#playlist').removeClass('smallDisplay');
     }
     $('#playlist-settings').hide();
-  }
+  };
+  
+  mm.addFolder = function() {
+    var newSongs = [];
+    for (var i=0; currData[i]; i++) {
+      if (!currData[i].folder) {
+        newSongs.push(currData[i]);
+      }
+    }
+    $('#playlist-settings').hide();
+    mm.playlist.addSongs(newSongs);
+  };
+  
+  mm.clearPlaylist = function() {
+    $('#playlist-settings').hide();
+    mm.playlist.newList();
+  };
+  
+  mm.downloadM3U = function() {
+    mm.playlist.generateM3U();
+  };
 }();
 
 // Simple JavaScript Templating
@@ -104,9 +124,9 @@ $(document).ready(function() {
   if (!window.console) {
     window.console = { log: function(){}, dir: function(){} };
   }
-    
+
   $('#listing')
-    .ajaxStart(function() { $(this).hide(); } )
+    .ajaxStart(function() { $(this).text(''); } )
     .ajaxStop(function() { $(this).show(); } );
     
   $('.section_header').bind('click', function(e) {
@@ -122,7 +142,12 @@ $(document).ready(function() {
         of: e,
         offset: '15 15'
       });
-      e.stopPropagation();
+      return false;
+  });
+  
+  $('#playlist-settings ul li').bind('click', function(e) {
+    var func = $(e.currentTarget).attr('data-func');
+    mm[func]();
   });
 
   $.address.change(mm.pageHistory);
@@ -133,6 +158,6 @@ $(document).ready(function() {
   mm.settings.init();
   mm.playlist.init();
   
-  if ( window.innerWidth < 1000 ) $('#playlist').addClass('smallDisplay');
+  if ( window.innerWidth < 1010 ) $('#playlist').addClass('smallDisplay');
   
 });

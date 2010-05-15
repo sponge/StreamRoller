@@ -28,6 +28,7 @@ a:hover {
 
 #listing table {
   min-width: 450px;
+  border: 1px solid #333;
 }
 
 #listing tr:hover {
@@ -65,16 +66,23 @@ a:hover {
 .smallDisplay {
   margin-top: 1em !important;
   float: left !important;
-  max-height: 200px;
   width: 450px;
 }
 
 .smallDisplay .list {
   overflow-y: scroll;
+  height: 200px;
+  border-top: 1px solid #333;
+  border-left: 1px solid #333;
+  border-bottom: 1px solid #333;
 }
 
 #playlist .list table tbody tr {
   cursor: pointer;
+}
+
+#playlist .list table {
+  width: 100%;
 }
 
 #playlist td.handle {

@@ -12,7 +12,7 @@ mod.init = function() {
 }
 
 mod.newList = function(arr) {
-  playlist = arr;
+  playlist = (arr) ? arr : [];
   curr = 0;
   mm.signal.send('playlistChanged');
 }
@@ -75,17 +75,21 @@ mod.sortChange = function(table, row) {
 };
 
 mod.addSong = function(o) {
-  var len = playlist.length;
-  if (typeof o == 'array') {
-    playlist = playlist.concat(o);
-  } else {
-    playlist.push(o);
-  }
-  if (len == 0) {
+  playlist.push(o);
+  if (playlist.length == 1) {
     mm.player.load(mod.skip(0));
   }
   mm.signal.send('playlistChanged');
-}
+};
+
+mod.addSongs = function(arr) {
+  var noSongs = (playlist.length == 0);
+  playlist = playlist.concat(arr);
+  if (noSongs) {
+    mm.player.load(mod.skip(0));
+  }
+  mm.signal.send('playlistChanged');
+};
 
 mod.deleteSong = function(e) {
   var i = $(e.currentTarget).attr('data-rowindex');
@@ -95,6 +99,25 @@ mod.deleteSong = function(e) {
   playlist.splice(i, 1);
   mm.signal.send('playlistChanged');
   return false;
-}
+};
+
+mod.generateM3U = function() {
+  var oldloc = window.location.href;
+  var m3u = ['#EXTM3U'];
+  for (var i=0; playlist[i]; i++) {
+    var f = playlist[i];
+    m3u.push('#EXTINF:'+ f.length +','+ f.file);
+    m3u.push('http://'+ window.location.host +'/get/'+ f.id);
+  }
+  
+  $.ajax({
+    url: '/m3u',
+    type: 'POST',
+    data: {playlist: m3u.join("\n")},
+    complete: function(xhr, status) { window.location.href = '/m3u'; }
+  });
+  
+  return false;
+};
 
 }();
