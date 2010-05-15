@@ -35,7 +35,7 @@ mod.init = function() {
     $('#loaderBar').progressbar('option', 'value', lpInt % 100);
     $('#sliderPlayback').slider('option', 'value', ppaInt);
     
-    $('#time').text(mm.utils.formatTime(pt) +'/'+ mm.utils.formatTime(tt));
+    $('#time').text(mm.utils.formatTime(pt/1000) +' / '+ mm.utils.formatTime(tt/1000));
   })
   .jPlayer("onSoundComplete", function() {
     mm.player.load(mm.playlist.nextSong());

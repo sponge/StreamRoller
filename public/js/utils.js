@@ -17,11 +17,10 @@ mod.findParentDir = function(path) {
   var parts = path.split('/');
   parts.pop();
   var dir = (parts.length === 0) ? '/' : parts.join('/');
-  return dir;
+  return (dir == '/') ? '' : dir;
 };
 
 mod.formatTime = function(time) {
-    time /= 1000;
     return Math.floor(time/60) +':'+ ((time%60 < 10) ? '0' : '')+ Math.floor(time%60);
 };
   

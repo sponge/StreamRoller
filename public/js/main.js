@@ -24,7 +24,8 @@
     }
     
     if (o.folder == 't') {
-      window.location.hash = o.path +'/'+ o.file;
+      
+      window.location.hash = ((o.path == '.') ? '' : o.path +'/') + o.file;
       return false;
     }
     
@@ -46,7 +47,7 @@
       currData = data;
       var content = mm.renderTable(dir, data, defaultCols, defaultLabels);
       $(div).html(content);
-      
+
       songs = [];
       for (var i=0; data[i]; i++) {
         if (!data[i].folder) {
@@ -145,6 +146,8 @@ $(document).ready(function() {
     var func = $(e.currentTarget).attr('data-func');
     mm[func]();
   });
+
+  $('body').disableSelection();
 
   $.address.change(mm.pageHistory);
   
