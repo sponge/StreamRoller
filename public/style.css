@@ -19,7 +19,7 @@ a:hover {
 #browser {
   float: left;
   margin: 0em 2em 0;
-  min-width: 450px;
+  min-width: 452px;
 }
 
 #listing th, #listing td {
@@ -43,7 +43,7 @@ a:hover {
 #playlist {
   float: right;
   margin: 0em 2em 1em 2em;
-  width: 450px;
+  width: 452px;
 }
 
 #playlist .list .selected {
@@ -60,7 +60,7 @@ a:hover {
 }
 
 #playlist tr:hover td.handle {
-  background-color: #006;
+  background-image: url('reorder.gif');
 }
 
 #body {
@@ -96,6 +96,18 @@ a:hover {
   background-color: #223;
   padding: 3px 0 3px 6px;
   cursor: pointer;
+}
+
+.section_header .icon {
+  width: 16px;
+  height: 16px;
+  background-image: url('arrows.png');
+  float: right;
+  margin-right: 5px;
+}
+
+.expanded_header .icon {
+  background-position: bottom left;
 }
 
 /* controls */
@@ -195,8 +207,8 @@ a:hover {
 
 #playlist-settings {
   position: absolute;
-  background-color: white;
-  color: black;
+  background-color: #112;
+  border: 1px solid #003;
 }
 
 #playlist-settings ul {
@@ -211,7 +223,7 @@ a:hover {
 }
 
 #playlist-settings ul li:hover {
-  background-color: #111;
-  color: white;
+  background-color: #99D;
+  color: black;
   cursor: pointer;
 }

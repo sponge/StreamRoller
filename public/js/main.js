@@ -54,6 +54,9 @@
           songs.push(data[i]);
         }
       }
+      var title = (dir) ? ' ('+dir+')' : '';
+      $('#browser .title').text('Browser'+ title);
+      $(window).trigger('resize');
     }
     ajaxHandle = $.getJSON('/list/'+dir, showDirCallback);
   };
@@ -137,7 +140,7 @@ $(document).ready(function() {
         my: 'left top',
         at: 'left top',
         of: e,
-        offset: '15 15'
+        offset: '10 10'
       });
       return false;
   });
