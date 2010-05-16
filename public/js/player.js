@@ -24,6 +24,7 @@ mod.init = function() {
   
   showPauseBtn();
   playerHnd.jPlayer({
+    nativeSupport: false,
     customCssIds: true,
     swfPath: "/"
   })

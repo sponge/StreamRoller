@@ -134,6 +134,10 @@ a:hover {
   background: url('placeholder.png') #111111;
 }
 
+#art img {
+  display: none;
+}
+
 #nowplaying {
   margin: 1em 0 0.75em 0;
 }
