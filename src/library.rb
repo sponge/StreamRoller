@@ -32,7 +32,7 @@ module Library
     songs = $db[:songs]
     Dir.chdir(dir) do
       files = []
-      Dir['{**/*/,**/*.mp3}'].each do |file|
+      Dir['{**/*/,**/*.mp3,**/*.flac}'].each do |file|
         files.push(file)
       end
       

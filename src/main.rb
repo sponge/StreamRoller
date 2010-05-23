@@ -115,10 +115,39 @@ class MediaStreamer < Sinatra::Base
   
   get '/get/:id' do
     # find song, and just send the file
-    Timeout.timeout(10) do
+    
+    #need this annoying class to format a StringIO the way the rest of this crap wants it
+    class StringIOWrapper
+      def initialize(sio)
+        @sio = sio
+      end
+      
+      def each
+        @sio.rewind
+        while buf = @sio.read(8192)
+          yield buf
+        end
+      end
+    end
+    
+    Timeout.timeout(60) do
       f = $db[:songs].filter(:id => params[:id]).first()
       filepath = $config['location'] + f[:path] + '/' + f[:file]
-      send_file filepath, :filename => f[:file]
+      
+      if File.extname(filepath) == ".flac"
+        content_type mime_type(".mp3")
+        attachment File.basename(filepath, ".flac") + ".mp3"
+        winpath = filepath.gsub('/','\\') #FIXME
+        temp = StringIO.new
+        p = IO.popen("flac -s -d -c \"#{winpath}\" | lame --silent --preset standard - -")
+        temp.write(p.read())
+        temp.flush()
+        response['Content-Length'] = temp.length.to_s
+        
+        halt StringIOWrapper.new(temp)
+      else
+        send_file filepath, :filename => f[:file]  
+      end
     end
   end
   
