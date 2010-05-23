@@ -63,7 +63,12 @@ module Library
       end
       
       scantime = (Time.now.to_i - beginTime)
-      sps = len / scantime
+      if scantime == 0
+        sps = 0
+      else
+        sps = len / scantime
+      end
+      
       puts "Took #{scantime.to_s} seconds to scan #{len.to_s} songs. (#{sps.to_s} songs per second)"
     end
   end
