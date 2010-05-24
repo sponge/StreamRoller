@@ -138,8 +138,7 @@ class MediaStreamer < Sinatra::Base
       if File.extname(filepath) == ".flac"
         content_type mime_type(".mp3")
         attachment File.basename(filepath, ".flac") + ".mp3"
-        winpath = filepath.gsub('/','\\') #FIXME
-        shntool = File.popen("shntool info \"#{winpath}\"")
+        shntool = File.popen("shntool info \"#{filepath}\"")
         shnput = shntool.read()
         data = shntool_parse(shnput)
         
@@ -153,7 +152,7 @@ class MediaStreamer < Sinatra::Base
         #size = frames * 417.96
         size = total * $config['transcode_bitrate'].to_i
         response['Content-length'] = size.to_s
-        halt StaticFile.popen("flac -s -d -c \"#{winpath}\" | lame --silent --cbr -b #{$config['transcode_bitrate']} - -")
+        halt StaticFile.popen("flac -s -d -c \"#{filepath}\" | lame --silent --cbr -b #{$config['transcode_bitrate']} - -")
       else
         send_file filepath, :filename => f[:file]  
       end
