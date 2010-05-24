@@ -13,6 +13,7 @@ import 'org.sqlite.JDBC'
 $:.push('src/') if (File.exists? 'src/')
 require 'utils'
 require 'library'
+require 'shntool_parser'
 include Utils, Library
 
 # check environment
@@ -138,13 +139,21 @@ class MediaStreamer < Sinatra::Base
         content_type mime_type(".mp3")
         attachment File.basename(filepath, ".flac") + ".mp3"
         winpath = filepath.gsub('/','\\') #FIXME
-        temp = StringIO.new
-        p = IO.popen("flac -s -d -c \"#{winpath}\" | lame --silent --preset standard - -")
-        temp.write(p.read())
-        temp.flush()
-        response['Content-Length'] = temp.length.to_s
+        shntool = File.popen("shntool info \"#{winpath}\"")
+        shnput = shntool.read()
+        data = shntool_parse(shnput)
         
-        halt StringIOWrapper.new(temp)
+        length = data["Length"]
+        p = length.partition(":")
+        minutes = p[0].to_i
+        seconds = p[2].partition(".")[0].to_i
+        ms = p[2].partition(".")[2].to_i
+        total = ms + seconds * 1000 + minutes * 60 * 1000
+        #frames = total.to_f / 26
+        #size = frames * 417.96
+        size = total * $config['transcode_bitrate'].to_i
+        response['Content-length'] = size.to_s
+        halt StaticFile.popen("flac -s -d -c \"#{winpath}\" | lame --silent --cbr -b #{$config['transcode_bitrate']} - -")
       else
         send_file filepath, :filename => f[:file]  
       end
