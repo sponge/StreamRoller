@@ -47,6 +47,7 @@ module Library
           begin
             if !File.directory?(file) 
               fields.merge!( get_tags( read_file(dir + file) ) )
+              fields["mimetype"] = mime_type(File.extname(file))
             end
           rescue
             puts "error getting id3 tag: #{file}"

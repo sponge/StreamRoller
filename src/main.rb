@@ -13,7 +13,6 @@ import 'org.sqlite.JDBC'
 $:.push('src/') if (File.exists? 'src/')
 require 'utils'
 require 'library'
-require 'shntool_parser'
 include Utils, Library
 
 # check environment
@@ -44,7 +43,11 @@ class Sequel::Model
 end
 
 def list_by_path(path)
-  $db[:songs].filter(:path => path).order(:folder.desc).order_more(:id3_track).order_more(:file)
+  if $transcoding
+    return $db[:songs].filter(:path => path).order(:folder.desc).order_more(:id3_track).order_more(:file)
+  else
+    return $db[:songs].filter(:path => path).filter({:mimetype => "audio/mpeg"} | {:folder => true}).order(:folder.desc).order_more(:id3_track).order_more(:file)
+  end
 end
 
 # library generation
@@ -62,8 +65,22 @@ if !$db.table_exists?(:songs) or !$config['skip_discovery']
     String :id3_album
     String :id3_title
     String :id3_date
+    String :mimetype
   end
   Library::scan($config['location'])
+end
+
+$transcoding = false
+
+if $config['transcoding']
+  fail = nil
+  #test for all of the needed commandline utilities
+  fail ||= test_executable_in_path("flac")
+  fail ||= test_executable_in_path("shntool")
+  fail ||= test_executable_in_path("lame")
+  if not fail
+    $transcoding = true
+  end
 end
 
 FileUtils.mkdir('art') if !File.directory?('art')
@@ -115,27 +132,13 @@ class MediaStreamer < Sinatra::Base
   end
   
   get '/get/:id' do
-    # find song, and just send the file
+    # find song, send file if mp3, transcode & send if flac
     
-    #need this annoying class to format a StringIO the way the rest of this crap wants it
-    class StringIOWrapper
-      def initialize(sio)
-        @sio = sio
-      end
-      
-      def each
-        @sio.rewind
-        while buf = @sio.read(8192)
-          yield buf
-        end
-      end
-    end
-    
-    Timeout.timeout(60) do
+    Timeout.timeout(10) do
       f = $db[:songs].filter(:id => params[:id]).first()
       filepath = $config['location'] + f[:path] + '/' + f[:file]
       
-      if File.extname(filepath) == ".flac"
+      if File.extname(filepath) == ".flac" and $transcoding
         content_type mime_type(".mp3")
         attachment File.basename(filepath, ".flac") + ".mp3"
         shntool = File.popen("shntool info \"#{filepath}\"")
@@ -184,7 +187,6 @@ class MediaStreamer < Sinatra::Base
   get '/*' do
     redirect '/#'+params[:splat][0]
   end
-  
   self.run!
   
 end
