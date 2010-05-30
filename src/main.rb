@@ -187,7 +187,7 @@ class MediaStreamer < Sinatra::Base
   get '/*' do
     redirect '/#'+params[:splat][0]
   end
-  self.run!
+  self.run!(:server => "webrick")
   
 end
 
