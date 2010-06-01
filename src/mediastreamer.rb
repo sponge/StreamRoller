@@ -207,9 +207,5 @@ class MediaStreamer < Sinatra::Base
   
   get '/*' do
     redirect '/#'+params[:splat][0]
-  end
-  self.run!
-  
+  end  
 end
-
-MediaStreamer.new
