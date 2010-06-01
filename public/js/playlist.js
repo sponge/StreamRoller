@@ -113,7 +113,7 @@ mod.generateM3U = function() {
   for (var i=0; playlist[i]; i++) {
     var f = playlist[i];
     m3u.push('#EXTINF:'+ f.length +','+ f.file);
-    m3u.push('http://'+ window.location.host +'/get/'+ f.id);
+    m3u.push('http://'+ window.location.host +'/get/'+ f.id + '?external=true');
   }
   
   $.ajax({

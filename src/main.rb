@@ -71,6 +71,7 @@ if !$db.table_exists?(:songs) or !$config['skip_discovery']
 end
 
 $transcoding = false
+$vorbis = false
 
 if $config['transcoding']
   fail = nil
@@ -80,6 +81,13 @@ if $config['transcoding']
   fail ||= test_executable_in_path("lame")
   if not fail
     $transcoding = true
+  end
+end
+
+if $transcoding and $config['vorbis']
+  result = test_executable_in_path("oggenc2")
+  if result == nil
+    $vorbis = true
   end
 end
 
@@ -139,23 +147,36 @@ class MediaStreamer < Sinatra::Base
       filepath = $config['location'] + f[:path] + '/' + f[:file]
       
       if File.extname(filepath) == ".flac" and $transcoding
-        content_type mime_type(".mp3")
-        attachment File.basename(filepath, ".flac") + ".mp3"
-        shntool = File.popen("shntool info \"#{filepath}\"")
-        shnput = shntool.read()
-        data = shntool_parse(shnput)
-        
-        length = data["Length"]
-        p = length.partition(":")
-        minutes = p[0].to_i
-        seconds = p[2].partition(".")[0].to_i
-        ms = p[2].partition(".")[2].to_i
-        total = ms + seconds * 1000 + minutes * 60 * 1000
-        #frames = total.to_f / 26
-        #size = frames * 417.96
-        size = total * $config['transcode_bitrate'].to_i
-        response['Content-length'] = size.to_s
-        halt StaticFile.popen("flac -s -d -c \"#{filepath}\" | lame --silent --cbr -b #{$config['transcode_bitrate']} - -")
+        if params[:external] == "true"
+          if $vorbis
+            content_type mime_type(".ogg")
+            attachment File.basename(filepath, ".flac") + ".ogg"
+            halt StaticFile.popen("oggenc2 -Q -q#{$config["vorbis_quality"]} -o - \"#{filepath}\"")
+          else
+            content_type mime_type(".mp3")
+            attachment File.basename(filepath, ".flac") + ".mp3"
+            halt StaticFile.popen("flac -s -d -c \"#{filepath}\" | lame --silent #{$config["lame_external_options"]} - -")
+          end
+        else
+          content_type mime_type(".mp3")
+          attachment File.basename(filepath, ".flac") + ".mp3"
+          shntool = File.popen("shntool info \"#{filepath}\"")
+          shnput = shntool.read()
+          data = shntool_parse(shnput)
+          
+          length = data["Length"]
+          p = length.partition(":")
+          minutes = p[0].to_i
+          seconds = p[2].partition(".")[0].to_i
+          ms = p[2].partition(".")[2].to_i
+          total = ms + seconds * 1000 + minutes * 60 * 1000
+          #frames = total.to_f / 26
+          #size = frames * 417.96
+          size = total * $config['transcode_bitrate'].to_i
+          size = (size.to_f / 8.0).ceil
+          response['Content-length'] = size.to_s
+          halt StaticFile.popen("flac -s -d -c \"#{filepath}\" | lame --silent --cbr -b #{$config['transcode_bitrate']} - -")
+        end
       else
         send_file filepath, :filename => f[:file]  
       end
@@ -187,7 +208,7 @@ class MediaStreamer < Sinatra::Base
   get '/*' do
     redirect '/#'+params[:splat][0]
   end
-  self.run!(:server => "webrick")
+  self.run!
   
 end
 

@@ -12,7 +12,7 @@ c.source_exclude_filter = []
 c.compile_ruby_files = false
 #c.java_lib_files = []
 c.java_lib_dirs = ['lib/java']
-c.files_to_copy = ['config.yml']
+c.files_to_copy = ['config.yml.example']
 
 c.target_jvm_version = 1.5
 #c.jvm_arguments = ""
