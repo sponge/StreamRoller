@@ -1,13 +1,13 @@
-require 'rubygems'
-require 'rack'
-
 $:.push('src/') if (File.exists? 'src/')
+$:.push('lib/ruby/') if (File.exists? 'lib/ruby/')
 
+require 'rack'
+require 'rackhacks'
 require 'mediastreamer'
 
 m = MediaStreamer.new
 
-r = Rack::Builder.new do
+r = HackBuilder.new do
   map '/get' do
     run m
   end
