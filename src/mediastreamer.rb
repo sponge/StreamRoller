@@ -74,20 +74,37 @@ $transcoding = false
 $vorbis = false
 
 if $config['transcoding']
-  fail = nil
+  failures = []
   #test for all of the needed commandline utilities
-  fail ||= test_executable_in_path("flac")
-  fail ||= test_executable_in_path("shntool")
-  fail ||= test_executable_in_path("lame")
-  if not fail
+  $flac = test_executable_in_path("flac", nil, failures)
+  $shntool = test_executable_in_path("shntool -h", "shntool", failures)
+  $lame = test_executable_in_path("lame --help", "lame", failures)
+  
+  if failures.empty?
     $transcoding = true
+  else
+    puts "At least one transcoding tool was not found. Consult the readme for details about installing:"
+    puts failures.join(", ")
   end
+  
 end
 
 if $transcoding and $config['vorbis']
-  result = test_executable_in_path("oggenc2")
-  if result == nil
+  
+  tests = [["oggenc2 -h", "oggenc2"], ["oggenc -h", "oggenc"]]
+
+  result = false
+  tests.each do |t|
+    $oggenc = test_executable_in_path(*t)
+    if $oggenc != false
+      break
+    end
+  end
+
+  if $oggenc != false
     $vorbis = true
+  else
+    puts "A vorbis encoding tool was not found. Consult the readme."
   end
 end
 
@@ -140,45 +157,47 @@ class MediaStreamer < Sinatra::Base
   end
   
   get '/get/:id' do
-    # find song, send file if mp3, transcode & send if flac
-    
-    Timeout.timeout(10) do
-      f = $db[:songs].filter(:id => params[:id]).first()
-      filepath = $config['location'] + f[:path] + '/' + f[:file]
+    Dir.chdir("tools") do |dir|
+      # find song, send file if mp3, transcode & send if flac
       
-      if File.extname(filepath) == ".flac" and $transcoding
-        if params[:external] == "true"
-          if $vorbis
-            content_type mime_type(".ogg")
-            attachment File.basename(filepath, ".flac") + ".ogg"
-            halt StaticFile.popen("oggenc2 -Q -q#{$config["vorbis_quality"]} -o - \"#{filepath}\"")
+      Timeout.timeout(10) do
+        f = $db[:songs].filter(:id => params[:id]).first()
+        filepath = $config['location'] + f[:path] + '/' + f[:file]
+        
+        if File.extname(filepath) == ".flac" and $transcoding
+          if params[:external] == "true"
+            if $vorbis
+              content_type mime_type(".ogg")
+              attachment File.basename(filepath, ".flac") + ".ogg"
+              halt StaticFile.popen("#{$oggenc} -Q -q#{$config["vorbis_quality"]} -o - \"#{filepath}\"")
+            else
+              content_type mime_type(".mp3")
+              attachment File.basename(filepath, ".flac") + ".mp3"
+              halt StaticFile.popen("#{$flac} -s -d -c \"#{filepath}\" | #{$lame} --silent #{$config["lame_external_options"]} - -")
+            end
           else
             content_type mime_type(".mp3")
             attachment File.basename(filepath, ".flac") + ".mp3"
-            halt StaticFile.popen("flac -s -d -c \"#{filepath}\" | lame --silent #{$config["lame_external_options"]} - -")
+            command = "#{$shntool} info \"#{filepath}\""
+            shntool = File.popen(command)
+            shnput = shntool.read()
+            data = shntool_parse(shnput)
+            
+            length = data["Length"]
+            p = length.partition(":")
+            minutes = p[0].to_i
+            seconds = p[2].partition(".")[0].to_i
+            ms = p[2].partition(".")[2].to_i
+            total = ms + seconds * 1000 + minutes * 60 * 1000
+            size = total * $config['transcode_bitrate'].to_i
+            size = (size.to_f / 8.0).ceil
+            response['Content-length'] = size.to_s
+            command = "#{$flac} -s -d -c \"#{filepath}\" | #{$lame} --silent --cbr -b #{$config['transcode_bitrate']} - -"
+            halt StaticFile.popen(command)
           end
         else
-          content_type mime_type(".mp3")
-          attachment File.basename(filepath, ".flac") + ".mp3"
-          shntool = File.popen("shntool info \"#{filepath}\"")
-          shnput = shntool.read()
-          data = shntool_parse(shnput)
-          
-          length = data["Length"]
-          p = length.partition(":")
-          minutes = p[0].to_i
-          seconds = p[2].partition(".")[0].to_i
-          ms = p[2].partition(".")[2].to_i
-          total = ms + seconds * 1000 + minutes * 60 * 1000
-          #frames = total.to_f / 26
-          #size = frames * 417.96
-          size = total * $config['transcode_bitrate'].to_i
-          size = (size.to_f / 8.0).ceil
-          response['Content-length'] = size.to_s
-          halt StaticFile.popen("flac -s -d -c \"#{filepath}\" | lame --silent --cbr -b #{$config['transcode_bitrate']} - -")
+          send_file filepath, :filename => f[:file]  
         end
-      else
-        send_file filepath, :filename => f[:file]  
       end
     end
   end

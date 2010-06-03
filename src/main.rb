@@ -23,4 +23,6 @@ r = HackBuilder.new do
   
 end
 
+puts "Starting server..."
 Rack::Handler::Mongrel.run r, :Port => 4567
+

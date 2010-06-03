@@ -1,6 +1,5 @@
 module Utils
   
-  require 'open3'
   require 'stringio'
 
   def shntool_parse(s)
@@ -17,14 +16,36 @@ module Utils
     return params
   end
 
-  #returns the error status
-  def test_executable_in_path(name)
-    stdin, stdout, stderr = Open3.popen3(name)
-    if stdout.eof? and stderr.eof?
-      puts "#{name} not found in path, cannot enable transcoding"
-      return true
+  def test_executable_in_path(command, name=nil, report_array=nil)
+    name ||= command
+    
+    path = nil
+    search = ["", "tools/"] 
+    search.each do |p|
+      begin
+        stdout = $stdout
+        stderr = $stderr
+        $stdout = StringIO.new
+        $stderr = StringIO.new
+        `#{p+command}`
+        if $?.success?
+          path = name
+          break
+        end
+      rescue IOError
+        
+      ensure
+        $stdout = stdout
+        $stderr = stderr
+      end
     end
-    return nil
+    
+    if not path.nil?
+      return path
+    else
+      report_array << name unless report_array.nil?
+      return false
+    end
   end
   
   def sanitize(path)
