@@ -24,7 +24,7 @@
 <body>
 
 <script type="text/html" id="tmpl_mediatable">
-  <table>
+  <table cellspacing="0" cellpadding="0">
     <thead>
       <tr>
         <% for (var i=0; columns[i]; i++) { %>
@@ -33,7 +33,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr><td>..</td><td>Parent Directory</td></tr>
+      <tr><td>..</td><td colspan="3">Parent Directory</td></tr>
       <% for (var i=0; data[i]; i++) { var f = data[i]; %>
         <tr data-rowindex="<%= i %>">
           <% for (var j=0; columns[j]; j++) { %>

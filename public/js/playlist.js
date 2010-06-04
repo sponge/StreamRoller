@@ -39,7 +39,7 @@ mod.skip = function(i) {
 };
 
 mod.drawPlaylist = function() {
-  var playlist_div = $('#playlist .list').html('<table><tbody></tbody></table>');
+  var playlist_div = $('#playlist .list').html('<table cellspacing="0" cellpadding="0"><tbody></tbody></table>');
   var tbody = playlist_div.find('table > tbody');
   for (var i=0; playlist[i]; i++) {
     var e = $('<tr>');
