@@ -163,7 +163,10 @@ class MediaStreamer < Sinatra::Base
       Timeout.timeout(10) do
         f = $db[:songs].filter(:id => params[:id]).first()
         filepath = $config['location'] + f[:path] + '/' + f[:file]
-        
+		
+		#log song to console: m/d hh:mm:ss REMOTE_ADDR: title - artist or filename
+		puts "#{Time.new.strftime("%m/%d %H:%M:%S")} #{request.env['REMOTE_ADDR']}: #{( (f[:id3_artist] && f[:id3_title] ) ? "#{f[:id3_artist]} - #{f[:id3_title]}" : f[:file])}"
+		
         if File.extname(filepath) == ".flac" and $transcoding
           if params[:external] == "true"
             if $vorbis
