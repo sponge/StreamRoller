@@ -1,8 +1,8 @@
 configuration do |c|
-c.project_name = 'MediaStreamer'
+c.project_name = 'StreamRoller'
 c.output_dir = 'package'
 c.main_ruby_file = 'main'
-c.main_java_file = 'org.mediastreamer.Main'
+c.main_java_file = 'org.streamroller.Main'
 
 # Compile all Ruby and Java files recursively
 # Copy all other files taking into account exclusion filter

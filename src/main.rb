@@ -3,9 +3,9 @@ $:.push('lib/ruby/') if (File.exists? 'lib/ruby/')
 
 require 'rack'
 require 'rackhacks'
-require 'mediastreamer'
+require 'streamroller'
 
-m = MediaStreamer.new
+m = StreamRoller.new
 
 r = HackBuilder.new do
   map '/get' do

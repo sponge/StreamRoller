@@ -1,4 +1,4 @@
-package org.mediastreamer;
+package org.streamroller;
 
 import javax.swing.*;
 import javax.swing.event.*;

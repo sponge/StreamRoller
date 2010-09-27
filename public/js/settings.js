@@ -13,7 +13,7 @@ mod.show = function() {
 		height: 140,
 		modal: true,
     draggable: false,
-    title: 'MediaStreamer Settings',
+    title: 'StreamRoller Settings',
 		buttons: {
       OK: function() {
 				$(this).dialog('close');

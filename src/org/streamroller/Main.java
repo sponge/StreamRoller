@@ -1,4 +1,4 @@
-package org.mediastreamer;
+package org.streamroller;
 
 import java.io.*;
 import java.awt.*;
@@ -29,11 +29,11 @@ public class Main
     }
 
     if (useConsole == false) {
-      JFrame frame = new JFrame("MediaStreamer");
+      JFrame frame = new JFrame("StreamRoller");
       MainUI mainui = new MainUI(frame);
     }
     
-    System.out.println("Now loading MediaStreamer...");
+    System.out.println("Now loading StreamRoller...");
     
     RubyInstanceConfig config = new RubyInstanceConfig();
     config.setArgv(args);

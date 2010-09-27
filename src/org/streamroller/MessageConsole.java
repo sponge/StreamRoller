@@ -1,4 +1,4 @@
-package org.mediastreamer;
+package org.streamroller;
 
 import java.io.*;
 import java.awt.*;

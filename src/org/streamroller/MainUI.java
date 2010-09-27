@@ -1,4 +1,4 @@
-package org.mediastreamer;
+package org.streamroller;
 
 import java.io.*;
 import java.awt.*;
@@ -64,7 +64,7 @@ public class MainUI {
       exitItem.addActionListener(exitListener);
       popup.add(exitItem);
 
-      trayIcon = new TrayIcon(icon, "MediaStreamer", popup);      
+      trayIcon = new TrayIcon(icon, "StreamRoller", popup);      
       trayIcon.setImageAutoSize(true);
       trayIcon.addMouseListener(mouseListener);
   

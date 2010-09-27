@@ -115,7 +115,7 @@ Thread.new { Library::scan_album_art($config['location']) } if (!$config['skip_a
 #  main routes
 # =============
 
-class MediaStreamer < Sinatra::Base
+class StreamRoller < Sinatra::Base
   
   set :static, true
   set :public, 'public/'
