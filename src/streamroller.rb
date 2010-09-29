@@ -44,9 +44,9 @@ end
 
 def list_by_path(path)
   if $transcoding
-    return $db[:songs].filter(:path => path).order(:folder.desc).order_more(:id3_track).order_more(:file)
+    return $db[:songs].filter(:path.like("#{path}%")).filter(:folder => "f").order(:id3_date).order_more(:id3_album).order_more(:id3_track).order_more(:id3_title).order_more(:file)
   else
-    return $db[:songs].filter(:path => path).filter({:mimetype => "audio/mpeg"} | {:folder => true}).order(:folder.desc).order_more(:id3_track).order_more(:file)
+    return $db[:songs].filter(:path.like("#{path}%")).filter(:folder => "f").filter({:mimetype => "audio/mpeg"} | {:folder => true}).order(:id3_date).order_more(:id3_album).order_more(:id3_track).order_more(:id3_title).order_more(:file)
   end
 end
 

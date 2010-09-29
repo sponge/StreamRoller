@@ -173,7 +173,7 @@ $(document).ready(function() {
 
     var list = recurse(data, '#');
     $('#folders .list').html( list );
-    $('#folders .list').jstree( {'plugins' : ['html_data','ui','themeroller'] } );
+    //$('#folders .list').jstree( {'plugins' : ['html_data','ui','themeroller'] } );
     $('#folders .list').bind('select_node.jstree', function(e,d) {
       console.log($(this));
       window.location.hash = d.rslt.obj.find("a").get(0).hash;
