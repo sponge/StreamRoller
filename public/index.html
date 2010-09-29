@@ -12,7 +12,8 @@
   <script type="text/javascript" src="/js/lib/jquery.address-1.2rc.min.js"></script>
   <script type="text/javascript" src="/js/lib/jquery.jplayer.min.js"></script>
   <script type="text/javascript" src="/js/lib/jquery.tablednd_0_5.js"></script>
-  
+  <script type="text/javascript" src="/js/lib/jquery.jstree.js"></script>
+
   <script type="text/javascript" src="/js/main.js"></script>
   <script type="text/javascript" src="/js/utils.js"></script>
   <script type="text/javascript" src="/js/signal.js"></script>
@@ -33,7 +34,6 @@
       </tr>
     </thead>
     <tbody>
-      <tr><td>..</td><td colspan="3">Parent Directory</td></tr>
       <% for (var i=0; data[i]; i++) { var f = data[i]; %>
         <tr data-rowindex="<%= i %>">
           <% for (var j=0; columns[j]; j++) { %>
@@ -84,13 +84,19 @@
   </div>
 </div>
 
+<div id="playlist">
+  <div class="section_header expanded_header"><span class="title">Playlist</span> <a href="#" class="options">(opt)</a> <div class="icon"></div></div>
+  <ul class="list"></ul>
+</div>
+
 <div id="body">
-  <div id="playlist">
-    <div class="section_header expanded_header"><span class="title">Playlist</span> <a href="#" class="options">(opt)</a> <div class="icon"></div></div>
+
+  <div id="folders">
+    <div class="section_header"><span class="title">Folders</span></div>
     <div class="list"></div>
   </div>
   <div id="browser">
-    <div class="section_header expanded_header"><span class="title">Browser</span> <div class="icon"></div></div>
+    <div class="section_header"><span class="title">Browser</span></div>
     <div id="listing"></div>
   </div>
 </div>

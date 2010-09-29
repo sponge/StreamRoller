@@ -62,12 +62,11 @@
   };
   
   mm.resize = function(e) {
-    if ( $(window).width() < $('#browser').outerWidth(true) + $('#playlist').outerWidth(true) - 5) {
-      $('#playlist').addClass('smallDisplay');
-    } else {
-      $('#playlist').removeClass('smallDisplay');
-    }
-    $('#playlist-settings').hide();
+    var winheight = $(this).height();
+    var controls = $('#controls');
+
+    $('#body').height( winheight - controls.height() );
+    $('#folders').height( winheight - controls.height() );
   };
   
   mm.addFolder = function() {
@@ -128,12 +127,12 @@ $(document).ready(function() {
   if (!window.console) {
     window.console = { log: function(){}, dir: function(){} };
   }
-    
-  $('.section_header').bind('click', function(e) {
+  
+  $('#playlist .section_header').bind('click', function(e) {
     $(this).toggleClass('expanded_header');
     $(this).next().slideToggle('fast');
   });
-  
+
   $('#playlist .section_header .options').bind('click', function(e) {
     $('#playlist-settings').toggle()
       .position({
@@ -155,11 +154,38 @@ $(document).ready(function() {
   $.address.change(mm.pageHistory);
   
   $(window).resize(mm.resize);
+
+  $.getJSON('/dirs', function(data) {
+    var recurse = function(d, pathStr) {
+      var $str = $('<ul/>');
+      for (var i in d) {
+        var p2 = pathStr+'/'+i;
+        var $li = $("<li/>");
+        var $a = $('<a href="'+ p2 +'">'+ i +'</a>');
+        $a.attr('href', p2);
+
+        $li.append($a);
+        $str.append($li);
+        $li.append(recurse(d[i], p2));
+      }
+      return $str;
+    }
+
+    var list = recurse(data, '#');
+    $('#folders .list').html( list );
+    $('#folders .list').jstree( {'plugins' : ['html_data','ui','themeroller'] } );
+    $('#folders .list').bind('select_node.jstree', function(e,d) {
+      console.log($(this));
+      window.location.hash = d.rslt.obj.find("a").get(0).hash;
+    });
+  });
+
+  
   
   mm.player.init();
   mm.settings.init();
   mm.playlist.init();
   
   if ( window.innerWidth < 1010 ) $('#playlist').addClass('smallDisplay');
-  
+
 });

@@ -16,10 +16,25 @@ a:hover {
   border-bottom: 1px dotted #00FFFF;
 }
 
-#browser {
+#body {
+  position: absolute;
+  top: 125px;
+  width: 100%;
+  overflow: hidden;
+}
+
+#folders {
+  position: absolute;
   float: left;
-  margin: 0em 2em 0;
-  min-width: 452px;
+  width: 260px;
+  overflow-y: scroll;
+}
+
+#browser {
+  margin-left: 260px;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: scroll;
 }
 
 #listing th, #listing td {
@@ -29,6 +44,7 @@ a:hover {
 #listing {
   border: 1px solid #223;
   border-top: none;
+
 }
 
 #listing table {
@@ -41,9 +57,12 @@ a:hover {
 }
 
 #playlist {
-  float: right;
-  margin: 0em 2em 1em 2em;
+  background-color: #151515;
+  position: fixed;
+  top: 0;
+  right: 0;
   width: 452px;
+  z-index: 1;
 }
 
 #playlist .list .selected {
@@ -53,6 +72,8 @@ a:hover {
 #playlist .list {
   border: 1px solid #223;
   border-top: none;
+  padding: 0;
+  margin: 0;
 }
 
 #playlist tr td.handle {
@@ -61,23 +82,6 @@ a:hover {
 
 #playlist tr:hover td.handle {
   background-image: url('reorder.gif');
-}
-
-#body {
-  clear: both;
-  margin-top: 150px;
-}
-
-.smallDisplay {
-  margin-top: 1em !important;
-  float: left !important;
-  width: 450px;
-}
-
-.smallDisplay .list {
-  overflow-y: scroll;
-  height: 200px;
-  border-right: none;
 }
 
 #playlist .list table tbody tr {
@@ -112,24 +116,19 @@ a:hover {
 
 /* controls */
 #controls {
-  background-color: #151515;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 450px;
+  width: 100%;
   height: 125px;
-  padding: 10px 20px 10px 20px;
 }
 
 #playback {
-  float: right;
+  float: left;
   width: 365px;
 }
 
 #art {
   width: 75px;
   height: 75px;
-  margin-right: 0.4em;
+  margin: 0 2em 0 1em;
   float: left;
   background: url('placeholder.png') #111111;
 }
@@ -139,7 +138,7 @@ a:hover {
 }
 
 #nowplaying {
-  margin: 1em 0 0.75em 0;
+  margin: 1em 0 0.75em 1em;
 }
 
 #time {
@@ -213,6 +212,7 @@ a:hover {
   position: absolute;
   background-color: #112;
   border: 1px solid #003;
+  z-index: 100;
 }
 
 #playlist-settings ul {
