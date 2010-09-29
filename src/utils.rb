@@ -64,4 +64,19 @@ module Utils
     return arr
   end
 
+
+  #use: h = recursive_dir_structure(".") for current dir
+  def recursive_dir_structure(dir)
+    structure = {}
+    Dir.chdir(dir) do
+      current = Dir["*"]
+      current.each do |c|
+        if File.directory?(c)
+          structure[c] = recursive_dir_structure(c)
+        end
+      end
+    end
+    return structure
+  end
+
 end
