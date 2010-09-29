@@ -31,6 +31,7 @@ a:hover {
 }
 
 #browser {
+  background: black;
   margin-left: 260px;
   height: 100%;
   overflow-x: hidden;
@@ -39,12 +40,6 @@ a:hover {
 
 #listing th, #listing td {
   padding: 3px 5px;
-}
-
-#listing {
-  border: 1px solid #223;
-  border-top: none;
-
 }
 
 #listing table {
@@ -70,10 +65,10 @@ a:hover {
 }
 
 #playlist .list {
-  border: 1px solid #223;
-  border-top: none;
   padding: 0;
   margin: 0;
+  height: 103px;
+  overflow-y: scroll;
 }
 
 #playlist tr td.handle {
@@ -230,4 +225,15 @@ a:hover {
   background-color: #99D;
   color: black;
   cursor: pointer;
+}
+
+/* some themeroller overrides */
+
+#folders a.ui-state-default {
+  background: none;
+  border: 0;
+}
+
+#folders div.ui-widget-content {
+  background: #151515;
 }

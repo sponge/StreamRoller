@@ -128,10 +128,10 @@ $(document).ready(function() {
     window.console = { log: function(){}, dir: function(){} };
   }
   
-  $('#playlist .section_header').bind('click', function(e) {
+  /*$('#playlist .section_header').bind('click', function(e) {
     $(this).toggleClass('expanded_header');
     $(this).next().slideToggle('fast');
-  });
+  });*/
 
   $('#playlist .section_header .options').bind('click', function(e) {
     $('#playlist-settings').toggle()
