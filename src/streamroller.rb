@@ -138,24 +138,6 @@ class StreamRoller < Sinatra::Base
     end
   end
   
-  get '/browse/?' do
-    Timeout.timeout(10) do
-      whereartist = (!params[:artist].to_s.empty?) ? 'WHERE id3_artist = :artist ' : ''
-      
-      artists = Song.find_by_sql('SELECT DISTINCT id3_artist FROM songs ORDER BY id3_artist').map(&:id3_artist)
-      albums = Song.find_by_sql([ 'SELECT DISTINCT id3_album FROM songs ' + whereartist + 'ORDER BY id3_album', {:artist => params[:artist]} ]).map(&:id3_album)
-      songs = []
-      if ( !params[:artist].to_s.empty? || !params[:album].to_s.empty? )
-        cond = {}
-        cond[:id3_artist] = params[:artist] if !params[:artist].to_s.empty?
-        cond[:id3_album] = params[:album] if !params[:album].to_s.empty?
-        songs = Song.find(:all, :select => 'id, id3_title', :conditions => cond, :order => 'folder, id3_track, file ')
-      end
-      
-      { :artists => artists, :albums => albums, :songs => songs }.to_json;
-    end
-  end
-  
   get '/get/:id' do
     Dir.chdir("tools") do |dir|
       # find song, send file if mp3, transcode & send if flac
@@ -214,6 +196,13 @@ class StreamRoller < Sinatra::Base
       rescue
         puts "Error sending album art: #{$!}"
       end
+    end
+  end
+
+  get '/dirs/?*/?' do
+    Timeout.timeout(10) do
+      path = "#{$config['location']}/#{Utils::sanitize params[:splat].join('')}"
+      Utils.recursive_dir_structure(path).to_json
     end
   end
   

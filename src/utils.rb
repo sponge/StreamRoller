@@ -71,8 +71,11 @@ module Utils
     Dir.chdir(dir) do
       current = Dir["*"]
       current.each do |c|
-        if File.directory?(c)
+        begin
+          if File.directory?(c)
           structure[c] = recursive_dir_structure(c)
+          end
+        rescue
         end
       end
     end

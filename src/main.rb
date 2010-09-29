@@ -1,5 +1,7 @@
 $:.push('src/') if (File.exists? 'src/')
 $:.push('lib/ruby/') if (File.exists? 'lib/ruby/')
+$:.push('lib/java/') if (File.exists? 'lib/java/')
+
 
 require 'rack'
 require 'rackhacks'
