@@ -1,37 +1,65 @@
 ~function() {
   window.mm = {};
   
-  var defaultCols = ['id3_track', 'id3_title', 'id3_album', 'id3_artist' ],
-      defaultLabels = ['#', 'Title', 'Album', 'Artist'],
-      ajaxHandle,
-      currData;
+  var ajaxHandle,
+      currData = [],
+      songCache = [];
   
   mm.pageHistory = function(e) {
     mm.showDir(e.path, '#listing');
   };
   
-  mm.renderTable = function(dir, data, columns, headers) {
-    var table = $(mm.tmpl('tmpl_mediatable', {data: data, columns: columns, headers: headers, parent: mm.utils.findParentDir(dir) }));
-    $(table).find('tbody tr').bind('click', mm.clickRow);
-    return table;
+  mm.renderTable = function(data) {
+    var listing = '';
+    var lastSong = data[0];
+    var group = [];
+    for (var i=0; data[i]; i++) {
+      if (data[i]['id3_album'] == lastSong['id3_album']) {
+        group.push(data[i]);
+        continue;
+      } else {
+        lastSong = data[i];
+        listing += mm.renderGroup(group);
+        group = [data[i]];
+      }
+    }
+    
+    if (group[0]) {
+      listing += mm.renderGroup(data);
+    }
+    return listing;
   };
+
+  mm.renderGroup = function(data) {
+    var tbody = [];
+    for (var i=0; data[i]; i++) {
+        var f = data[i];
+        var row = ['<tr data-songid="', f['id'] ,'"><td>', f['id3_track'] ,'</td> <td>', f['id3_title'] ,'</td> <td align="right">', mm.utils.formatTime(f['length']) ,'</td></tr>'].join('');
+        tbody.push(row);
+    }
+    var grp = ['<div class="listingGroup">',
+    ,'<div class="groupName">', data[0]['id3_artist'] ,' - ', data[0]['id3_album'] ,' [', data[0]['id3_date'] ,']</div>'
+    ,'<div class="groupPhoto"><img src="/pic/', data[0].id ,'" width="96" height="96"/></div>'
+    ,'<table class="groupContents">'
+    ,'  <tbody>'
+    , tbody.join('')
+    ,'  </tbody>'
+    ,'</table>'
+    ,'</div>'].join('');
+
+    return grp;
+  }
   
   mm.clickRow = function(e) {
-    var o = currData[this.getAttribute('data-rowindex')];
-    if (!o) {
-      window.location.hash = mm.utils.findParentDir(window.location.hash);
-      return false;
-    }
-    
-    if (o.folder == 't') {
-      
-      window.location.hash = ((o.path == '.') ? '' : o.path +'/') + o.file;
-      return false;
-    }
-    
+    var o = songCache[this.getAttribute('data-songid')];
     mm.playlist.addSong(o);
     return false;
   };
+
+  mm.toggleRow = function(e) {
+    $(this).parent('li').toggleClass('open');
+    $(this).next('ul').slideToggle();
+  }
   
   mm.showDir = function(dir, div) {
     dir = mm.utils.stripSlashes(dir);
@@ -44,13 +72,16 @@
         alert('Failed');
         return;
       }
-      currData = data;
-      var content = mm.renderTable(dir, data, defaultCols, defaultLabels);
+
+      var content = mm.renderTable(data);
       $(div).html(content);
+
+      currData = data;
 
       songs = [];
       for (var i=0; data[i]; i++) {
         if (!data[i].folder) {
+          songCache[data[i]['id']] = data[i];
           songs.push(data[i]);
         }
       }
@@ -62,11 +93,8 @@
   };
   
   mm.resize = function(e) {
-    var winheight = $(this).height();
-    var controls = $('#controls');
-
-    $('#body').height( winheight - controls.height() );
-    $('#folders').height( winheight - controls.height() );
+    $('#folders .list').height($('#folders').height() - $('#folders .section_header').outerHeight());
+    $('#listing').height($('#browser').height() - $('#browser .section_header').outerHeight());
   };
   
   mm.addFolder = function() {
@@ -90,48 +118,11 @@
   };
 }();
 
-// Simple JavaScript Templating
-// John Resig - http://ejohn.org/ - MIT Licensed
-var cache = {};
-mm.tmpl = function tmpl(str, data) {
-    // Figure out if we're getting a template, or if we need to
-    // load the template - and be sure to cache the result.
-    var fn = !/\W/.test(str) ?
-  cache[str] = cache[str] ||
-    tmpl(document.getElementById(str).innerHTML) :
-
-    // Generate a reusable function that will serve as a template
-    // generator (and which will be cached).
-  new Function("obj",
-    "var p=[],print=function(){p.push.apply(p,arguments);};" +
-
-    // Introduce the data as local variables using with(){}
-    "with(obj){p.push('" +
-
-    // Convert the template into pure JavaScript
-    str.replace(/[\r\t\n]/g, " ")
-       .replace(/'(?=[^%]*%>)/g,"\t")
-       .split("'").join("\\'")
-       .split("\t").join("'")
-       .replace(/<%=(.+?)%>/g, "',$1,'")
-       .split("<%").join("');")
-       .split("%>").join("p.push('")
-       + "');}return p.join('');");
-
-    // Provide some basic currying to the user
-    return data ? fn(data) : fn;
-};
-
 $(document).ready(function() {
 
   if (!window.console) {
     window.console = { log: function(){}, dir: function(){} };
   }
-  
-  /*$('#playlist .section_header').bind('click', function(e) {
-    $(this).toggleClass('expanded_header');
-    $(this).next().slideToggle('fast');
-  });*/
 
   $('#playlist .section_header .options').bind('click', function(e) {
     $('#playlist-settings').toggle()
@@ -153,39 +144,41 @@ $(document).ready(function() {
 
   $.address.change(mm.pageHistory);
   
-  $(window).resize(mm.resize);
 
+  window.setTimeout(function() {
   $.getJSON('/dirs', function(data) {
     var recurse = function(d, pathStr) {
       var $str = $('<ul/>');
       for (var i in d) {
         var p2 = pathStr+'/'+i;
         var $li = $("<li/>");
-        var $a = $('<a href="'+ p2 +'">'+ i +'</a>');
-        $a.attr('href', p2);
+        var $a = $('<a href="'+ p2 +'"><div class="status"></div>'+ i +'</a>');
 
         $li.append($a);
         $str.append($li);
-        $li.append(recurse(d[i], p2));
+        var sub = recurse(d[i], p2);
+        if (sub.children().length) {
+          $li.append(sub);
+        }
       }
       return $str;
     }
 
     var list = recurse(data, '#');
     $('#folders .list').html( list );
-    //$('#folders .list').jstree( {'plugins' : ['html_data','ui','themeroller'] } );
-    $('#folders .list').bind('select_node.jstree', function(e,d) {
-      console.log($(this));
-      window.location.hash = d.rslt.obj.find("a").get(0).hash;
-    });
+    $('#folders .list ul li:has(ul)').addClass('sub');
   });
+  },500);
 
-  
+  $(window).bind('resize', mm.resize);
+  $(window).trigger('resize');
+
+  $('#browser').delegate('.groupContents tbody tr', 'click', mm.clickRow);
+  $('#folders .list').delegate('a', 'click', mm.toggleRow);
+
   
   mm.player.init();
   mm.settings.init();
   mm.playlist.init();
   
-  if ( window.innerWidth < 1010 ) $('#playlist').addClass('smallDisplay');
-
 });

@@ -3,7 +3,7 @@
 <head>
   <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
   <title>StreamRoller</title>
-  
+
   <link type="text/css" rel="stylesheet" href="/dark-hive/jquery-ui-1.8.1.custom.css"/>
   <link type="text/css" rel="stylesheet" href="style.css"/>
   
@@ -12,7 +12,6 @@
   <script type="text/javascript" src="/js/lib/jquery.address-1.2rc.min.js"></script>
   <script type="text/javascript" src="/js/lib/jquery.jplayer.min.js"></script>
   <script type="text/javascript" src="/js/lib/jquery.tablednd_0_5.js"></script>
-  <script type="text/javascript" src="/js/lib/jquery.jstree.js"></script>
 
   <script type="text/javascript" src="/js/main.js"></script>
   <script type="text/javascript" src="/js/utils.js"></script>
@@ -23,31 +22,6 @@
   
 </head>
 <body>
-
-<script type="text/html" id="tmpl_mediatable">
-  <table cellspacing="0" cellpadding="0">
-    <thead>
-      <tr>
-        <% for (var i=0; columns[i]; i++) { %>
-          <th><%=headers[i] %></th>
-        <% } %>
-      </tr>
-    </thead>
-    <tbody>
-      <% for (var i=0; data[i]; i++) { var f = data[i]; %>
-        <tr data-rowindex="<%= i %>">
-          <% for (var j=0; columns[j]; j++) { %>
-            <% if ((columns[j] == 'file' || columns[j] == 'id3_title') && f.folder) { %>
-              <td><%= f.file %></td>
-            <%} else { %>
-              <td><%=f[columns[j]]%></td>
-            <% } %>
-          <% } %>
-        </tr>
-      <% } %>
-    </tbody>
-  </table>
-</script>
 
 <div id="settings">
   <h1>StreamRoller Settings</h1>
@@ -85,12 +59,11 @@
 </div>
 
 <div id="playlist">
-  <div class="section_header"><span class="title">Playlist</span> <a href="#" class="options">(opt)</a> <div class="icon"></div></div>
+  <div class="section_header"><span class="title">Playlist</span> <a href="#" class="options">(opt)</a></div>
   <ul class="list"></ul>
 </div>
 
 <div id="body">
-
   <div id="folders">
     <div class="section_header"><span class="title">Folders</span></div>
     <div class="list"></div>

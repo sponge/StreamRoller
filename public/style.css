@@ -17,38 +17,98 @@ a:hover {
 }
 
 #body {
-  position: absolute;
+  position: fixed;
   top: 125px;
+  bottom:0;
+  left: 0;
+  right: 0;
   width: 100%;
   overflow: hidden;
 }
 
 #folders {
   position: absolute;
-  float: left;
+  top: 0;
+  left: 0;
+  bottom: 0;
   width: 260px;
-  overflow-y: scroll;
+}
+
+#folders .list {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+#folders .list ul {
+  list-style-type: none;
+  padding-left: 20px;
+}
+
+
+#folders .list ul li ul {
+  display: none;
+}
+
+#folders .list a div.status {
+    float: left;
+    width: 7px;
+    height: 7px;
+    position: relative;
+    top: 5px;
+    margin-right: 3px;
+    background-image: url('treearrows.gif');
+}
+
+#folders .list li.sub > a div.status {
+    background-position: 0px 14px;
+}
+
+#folders .list li.sub.open > a div.status {
+    background-position: 0px 7px;
 }
 
 #browser {
-  background: black;
-  margin-left: 260px;
-  height: 100%;
+  background-color: black;
+  position: absolute;
+  top: 0;
+  left: 260px;
+  bottom: 0px;
+  right: 0;
+}
+
+#listing {
   overflow-x: hidden;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
-#listing th, #listing td {
-  padding: 3px 5px;
+div.listingGroup {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  padding: 2em 2em 0;
+  width: 100%;
+  clear: both;
 }
 
-#listing table {
-  min-width: 450px;
+div.listingGroup div.groupName {
+  border-bottom: 1px solid #333;
+  margin-bottom: 0.75em;
+  padding-bottom: 0.25em;
 }
 
-#listing tbody tr:hover {
-  background-color: #333;
+div.listingGroup div.groupPhoto {
+  float: left;
+  margin-top: 0.5em;
+  margin-right: 1em;
+}
+
+div.listingGroup table.groupContents tr {
   cursor: pointer;
+}
+
+div.listingGroup tr:nth-child(odd) {
+  background-color: #151515;
 }
 
 #playlist {
@@ -68,7 +128,7 @@ a:hover {
   padding: 0;
   margin: 0;
   height: 103px;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 #playlist tr td.handle {
@@ -94,7 +154,6 @@ a:hover {
 .section_header {
   background-color: #223;
   padding: 3px 0 3px 6px;
-  cursor: pointer;
 }
 
 .section_header .icon {
@@ -111,7 +170,10 @@ a:hover {
 
 /* controls */
 #controls {
-  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   height: 125px;
 }
 
