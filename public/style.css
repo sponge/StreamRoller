@@ -16,6 +16,11 @@ a:hover {
   border-bottom: 1px dotted #00FFFF;
 }
 
+.section_header {
+  background-color: #223;
+  padding: 3px 0 3px 6px;
+}
+
 #body {
   position: fixed;
   top: 125px;
@@ -26,12 +31,18 @@ a:hover {
   overflow: hidden;
 }
 
+/* left column folders view */
+
 #folders {
   position: absolute;
   top: 0;
   left: 0;
   bottom: 0;
   width: 260px;
+}
+
+#folders a {
+  color: #DDD;
 }
 
 #folders .list {
@@ -44,7 +55,6 @@ a:hover {
   list-style-type: none;
   padding-left: 20px;
 }
-
 
 #folders .list ul li ul {
   display: none;
@@ -68,6 +78,8 @@ a:hover {
     background-position: 0px 7px;
 }
 
+/* browser frame */
+
 #browser {
   background-color: black;
   position: absolute;
@@ -82,6 +94,8 @@ a:hover {
   overflow-y: auto;
 }
 
+/* album grouping browser */
+
 div.listingGroup {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -89,6 +103,7 @@ div.listingGroup {
   padding: 2em 2em 0;
   width: 100%;
   clear: both;
+
 }
 
 div.listingGroup div.groupName {
@@ -98,18 +113,43 @@ div.listingGroup div.groupName {
 }
 
 div.listingGroup div.groupPhoto {
+  width: 96px;
   float: left;
   margin-top: 0.5em;
   margin-right: 1em;
+}
+
+div.listingGroup table.groupContents {
+  width: 70%;
+}
+
+div.listingGroup table.groupContents tr:nth-child(odd) {
+  background-color: #151515;
 }
 
 div.listingGroup table.groupContents tr {
   cursor: pointer;
 }
 
-div.listingGroup tr:nth-child(odd) {
-  background-color: #151515;
+div.listingGroup table.groupContents tr:hover {
+  background-color: #252525;
 }
+
+div.listingGroup table.groupContents td {
+  padding: 0.1em 1em;
+}
+
+div.listingGroup table.groupContents td:nth-child(1) {
+  width: 20px;
+  padding-left: 0.25em;
+}
+
+div.listingGroup table.groupContents td:nth-child(3) {
+  width: 20px;
+  padding-right: 0.25em;
+}
+
+/* playlist */
 
 #playlist {
   background-color: #151515;
@@ -127,7 +167,7 @@ div.listingGroup tr:nth-child(odd) {
 #playlist .list {
   padding: 0;
   margin: 0;
-  height: 103px;
+  height: 102px;
   overflow-y: auto;
 }
 
@@ -143,29 +183,22 @@ div.listingGroup tr:nth-child(odd) {
   cursor: pointer;
 }
 
+#playlist .section_header {
+  cursor: pointer;
+}
+
+#playlist .list {
+  border: 1px solid black;
+  border-top: none;
+  border-right: none
+}
+
 #playlist .list table {
   width: 100%;
 }
 
 #playlist td.handle {
   cursor: n-resize;
-}
-
-.section_header {
-  background-color: #223;
-  padding: 3px 0 3px 6px;
-}
-
-.section_header .icon {
-  width: 16px;
-  height: 16px;
-  background-image: url('arrows.png');
-  float: right;
-  margin-right: 5px;
-}
-
-.expanded_header .icon {
-  background-position: bottom left;
 }
 
 /* controls */
