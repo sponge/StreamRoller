@@ -5,7 +5,10 @@ require 'rack'
 require 'rackhacks'
 require 'streamroller'
 
-m = StreamRoller.new
+additional_mime = {".flac" => "audio/x-flac"}
+Rack::Mime::MIME_TYPES.merge!(additional_mime)
+
+m = StreamRoller::StreamRoller.new
 
 r = HackBuilder.new do
   map '/get' do
