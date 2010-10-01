@@ -7,112 +7,39 @@
 
 ~function() {
   window.mm = {};
-  
-  var ajaxHandle,
-      currData = [],
-      songCache = [];
+
+  mm.browserDelegate = window.groupBrowser;
+  mm.dataSourceDelegate = window.dirDataSource;
   
   mm.pageHistory = function(e) {
     mm.showDir(e.path, '#listing');
   };
-  
-  mm.renderTable = function(data) {
-    var listing = '';
-    var lastSong = data[0];
-    var group = [];
-    for (var i=0; data[i]; i++) {
-      if (data[i]['id3_album'] == lastSong['id3_album']) {
-        group.push(data[i]);
-        continue;
-      } else {
-        lastSong = data[i];
-        listing += mm.renderGroup(group);
-        group = [data[i]];
-      }
-    }
-    
-    if (group[0]) {
-      listing += mm.renderGroup(group);
-    }
-    return listing;
-  };
-
-  mm.renderGroup = function(data) {
-    var tbody = [];
-    for (var i=0; data[i]; i++) {
-        var f = data[i];
-        var row = ['<tr data-songid="', f['id'] ,'"><td>', f['id3_track'] ,'</td> <td>', f['id3_title'] ,'</td> <td align="right">', mm.utils.formatTime(f['length']) ,'</td></tr>'].join('');
-        tbody.push(row);
-    }
-    var grp = ['<div class="listingGroup">',
-    ,'<div class="groupName">', data[0]['id3_artist'] ,' - ', data[0]['id3_album'] ,' [', data[0]['id3_date'] ,']</div>'
-    ,'<div class="groupPhoto"><img src="/pic/', data[0].id ,'" width="96" height="96"/></div>'
-    ,'<table class="groupContents" cellspacing="0">'
-    ,'  <tbody>'
-    , tbody.join('')
-    ,'  </tbody>'
-    ,'</table>'
-    ,'</div>'].join('');
-
-    return grp;
-  }
   
   mm.clickRow = function(e) {
     var o = songCache[this.getAttribute('data-songid')];
     mm.playlist.addSong(o);
     return false;
   };
-
-  mm.toggleRow = function(e) {
-    $(this).parent('li').toggleClass('open');
-    $(this).next('ul').slideToggle(100);
-  }
   
-  mm.showDir = function(dir, div) {
+  mm.showDir = function(dir) { 
     dir = mm.utils.stripSlashes(dir);
-    if (ajaxHandle) {
-      ajaxHandle.abort();
+    mm.dataSourceDelegate.getData(dir, cb);
+    var hnd = setTimeout(function() { $('#browser .progress').show()}, 250);
+    function cb(data) {
+      mm.browserDelegate.draw(data, '#browser .content');
+      $('#browser .progress').hide();
+      clearTimeout(hnd);
     }
-
-    function showDirCallback(data, textStatus) {
-      if (!data) {
-        alert('Failed');
-        return;
-      }
-
-      var content = mm.renderTable(data);
-      $(div).html(content);
-      $(div).find('.groupPhoto img').reflect();
-      currData = data;
-
-      songs = [];
-      for (var i=0; data[i]; i++) {
-        if (!data[i].folder) {
-          songCache[data[i]['id']] = data[i];
-          songs.push(data[i]);
-        }
-      }
-      var title = (dir) ? ' ('+dir+')' : '';
-      $('#browser .title').text('Browser'+ title);
-      $(window).trigger('resize');
-    }
-    ajaxHandle = $.getJSON('/list/'+dir, showDirCallback);
   };
   
   mm.resize = function(e) {
-    $('#folders .list').height($('#folders').height() - $('#folders .section_header').outerHeight());
-    $('#listing').height($('#browser').height() - $('#browser .section_header').outerHeight());
+    $('#folders .progress, #folders .content').height($('#folders').height() - $('#folders .section_header').outerHeight());
+    $('#browser .progress, #browser .content').height($('#browser').height() - $('#browser .section_header').outerHeight());
   };
   
   mm.addFolder = function() {
-    var newSongs = [];
-    for (var i=0; currData[i]; i++) {
-      if (!currData[i].folder) {
-        newSongs.push(currData[i]);
-      }
-    }
-    $('#playlist-settings').hide();
-    mm.playlist.addSongs(newSongs);
+    var songs = mm.dataSourceDelegate.getActiveSongs();
+    mm.playlist.addSongs(songs);
   };
   
   mm.clearPlaylist = function() {
@@ -123,7 +50,6 @@
   mm.downloadM3U = function() {
     mm.playlist.generateM3U();
   };
-}();
 
 $(document).ready(function() {
 
@@ -151,37 +77,13 @@ $(document).ready(function() {
 
   $.address.change(mm.pageHistory);
   
-
-  window.setTimeout(function() {
-  $.getJSON('/dirs', function(data) {
-    var recurse = function(d, pathStr) {
-      var $str = $('<ul/>');
-      for (var i in d) {
-        var p2 = pathStr+'/'+i;
-        var $li = $("<li/>");
-        var $a = $('<a href="'+ p2 +'"><div class="status"></div>'+ i +'</a>');
-
-        $li.append($a);
-        $str.append($li);
-        var sub = recurse(d[i], p2);
-        if (sub.children().length) {
-          $li.append(sub);
-        }
-      }
-      return $str;
-    }
-
-    var list = recurse(data, '#');
-    $('#folders .list').html( list );
-    $('#folders .list ul li:has(ul)').addClass('sub');
-  });
-  },500);
+  mm.dataSourceDelegate.getFolderView('#folders .content');
 
   $(window).bind('resize', mm.resize);
   $(window).trigger('resize');
 
-  $('#browser').delegate('.groupContents tbody tr', 'click', mm.clickRow);
-  $('#folders .list').delegate('a', 'click', mm.toggleRow);
+  $('#browser').delegate('.groupContents tbody tr', 'click', mm.clickRow); // fixme: move me out to dleegate
+  $('#folders .content').delegate('a', 'click', mm.dataSourceDelegate.rowClicked);
 
   $('#playlist .section_header').toggle(function(e) {
     $(this).next().attr('style', 'height:500px;');
@@ -196,3 +98,5 @@ $(document).ready(function() {
   mm.playlist.init();
   
 });
+
+}();

@@ -78,6 +78,22 @@ a:hover {
     background-position: 0px 7px;
 }
 
+.content {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+#browser .progress {
+  display: none;
+  position: absolute;
+  top: 21px;
+  left: 0;
+  bottom; 0;
+  right: 0;
+  background: rgba(0,0,0,0.8) url('throbber.gif') no-repeat scroll center center;
+  z-index 99;
+}
+
 /* browser frame */
 
 #browser {
@@ -85,13 +101,8 @@ a:hover {
   position: absolute;
   top: 0;
   left: 260px;
-  bottom: 0px;
+  bottom: 0;
   right: 0;
-}
-
-#listing {
-  overflow-x: hidden;
-  overflow-y: auto;
 }
 
 /* album grouping browser */
