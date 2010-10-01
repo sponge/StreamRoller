@@ -16,7 +16,22 @@ module StreamRoller
       
       @handlers = {}
       
+      conf_handlers = $config["handlers"]
+      
       RequestHandler::AbstractHandler.defined_handlers.each do |h|
+        #handlers must have a configuration name
+        next if h.config_name.nil?
+        
+        #unmentioned handlers are passed
+        next if conf_handlers[h.config_name].nil?
+        
+        #handler must be enabled
+        next if conf_handlers[h.config_name]["enabled"].nil? or conf_handlers[h.config_name]["enabled"] == false
+        
+        config = h.default_config.clone
+        
+        config.merge!(conf_handlers[h.config_name])
+        
         #determine if the required tools are a subset of the available tools
         
         cont = true
@@ -31,7 +46,7 @@ module StreamRoller
         
         h.supported_mimetypes.each do |m|
           @handlers[m] ||= []
-          @handlers[m] << h.new(toolman)
+          @handlers[m] << h.new(toolman, config)
         end
       
         @handlers.each do |k,v|

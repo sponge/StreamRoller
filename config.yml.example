@@ -2,7 +2,12 @@ location: D:/mp3/
 db: library.sqlite
 skip_discovery: true
 skip_album_art: false
-transcoding: true
-transcode_bitrate: 128
-vorbis_quality: 5
-lame_external_options: --preset standard
+
+handlers:
+    flac_to_mp3:
+        enabled: true
+        bitrate: 128
+    
+    mp3passthrough:
+        enabled: true
+

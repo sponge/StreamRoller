@@ -1,5 +1,6 @@
 require 'src/abstracthandler'
 require 'src/utils'
+
 module StreamRoller
   module RequestHandler
     class FlacToMP3 < AbstractHandler      
@@ -10,9 +11,9 @@ module StreamRoller
       require_tool "lame"
       require_tool "shntool"
       
-      def initialize(toolman)
-        @toolman = toolman
-      end
+      config_name "flac_to_mp3"
+      
+      default_config({ "bitrate" => 128 })
       
       def handle(sinatra_request, dbrow)
         
@@ -29,12 +30,12 @@ module StreamRoller
         seconds = p[2].partition(".")[0].to_i
         ms = p[2].partition(".")[2].to_i
         total = ms + seconds * 1000 + minutes * 60 * 1000
-        size = total * $config['transcode_bitrate'].to_i
+        size = total * @config['bitrate'].to_i
         size = (size.to_f / 8.0).ceil
         
         sinatra_request.response['Content-length'] = size.to_s
         
-        return @toolman.pipe("flac", "-s -d -c \"#{filepath}\"").pipe("lame", "--silent --cbr -b #{$config['transcode_bitrate']} - -").io
+        return @toolman.pipe("flac", "-s -d -c \"#{filepath}\"").pipe("lame", "--silent --cbr -b #{@config['bitrate']} - -").io
         
       end
     end

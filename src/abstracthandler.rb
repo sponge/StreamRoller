@@ -42,7 +42,10 @@ module StreamRoller
       @required_tools = []
       @priority = -1
       @supported_mimetypes = []
-      inheritable_attributes :supported_mimetypes, :priority, :required_tools
+      @config_name = nil
+      @default_config = {}
+      
+      inheritable_attributes :supported_mimetypes, :priority, :required_tools, :config_name, :default_config
       
       @handlers = []
       
@@ -72,10 +75,25 @@ module StreamRoller
           return @handlers
         end
         
-        def add_handler( h )
+        def add_handler(h)
           @handlers << h
         end
         
+        def config_name(c=nil)
+          @config_name = c unless c.nil?
+          return @config_name
+        end
+        
+        def default_config(h=nil)
+          @default_config = h unless h.nil?
+          return @default_config
+        end
+        
+      end
+      
+      def initialize(toolman, config)
+        @toolman = toolman
+        @config = config
       end
       
       def self.inherited(subclass)
