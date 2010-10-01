@@ -78,7 +78,7 @@ module StreamRoller
     def self.scan_album_art(base)
       #songs = Song.find(:all, :conditions => { :art => nil, :folder => 'f' })
       songs = $db[:songs].where(:art => nil, :folder => 'f')
-      songs.each do |song|      
+      songs.all do |song|      
         begin
           art = read_file(base + song[:path] + '/' + song[:file]).getTag().getFirstArtwork()
           if (art)
@@ -87,7 +87,9 @@ module StreamRoller
             md5 = java.math.BigInteger.new(m.digest()).toString(16).slice(-8,8)
             ext = art.getMimeType().to_s.split('/')[1]
             filename = "#{md5}.#{ext}"
+            
             $db[:songs].filter(:id => song[:id]).update(:art => filename)
+            
             if (!File.exists? "art/#{filename}")
               f = java.io.File.new("art/#{filename}")
               fos = java.io.FileOutputStream.new(f)

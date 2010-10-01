@@ -1,4 +1,5 @@
-require 'src/abstracthandler'
+$:.push('src/') if (File.exists? 'src/')
+require 'abstracthandler'
 
 module StreamRoller
 
@@ -59,6 +60,6 @@ module StreamRoller
   end
 end
 
-Dir["src/request_handlers/*.rb"].each do |r|
+Dir["src/request_handlers/*.rb","src/request_handlers/*.class"].each do |r|
   require r
 end
