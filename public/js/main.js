@@ -16,7 +16,7 @@
   };
   
   mm.clickRow = function(e) {
-    var o = songCache[this.getAttribute('data-songid')];
+    var o = mm.dataSourceDelegate.getSongById(this.getAttribute('data-songid'));
     mm.playlist.addSong(o);
     return false;
   };

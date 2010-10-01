@@ -75,11 +75,11 @@ mod.rowClicked = function(e) {
 };
 
 mod.getActiveSongs = function() {
-    return currData;
+  return currData;
 };
 
-mod.showProgress = function() {
-  $('#folders .progress').show();
-};
+mod.getSongById = function(id) {
+  return songCache[id];
+}
 
 }();
