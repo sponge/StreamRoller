@@ -19,9 +19,6 @@ module StreamRoller
         #determine if the required tools are a subset of the available tools
         
         cont = true
-        #XXX
-        pp h
-        pp h.required_tools
         h.required_tools.each do |t|
           if !available_tools.include?(t)
             cont = false

@@ -19,7 +19,6 @@ module StreamRoller
         sinatra_request.content_type mime_type(".mp3")
         sinatra_request.attachment File.basename(dbrow[:file], ".flac") + ".mp3"
         filepath = $config['location'] + dbrow[:path] + '/' + dbrow[:file]
-        puts @toolman.commandline("shntool", "info \"#{filepath}\"")
         shntool = @toolman.invoke("shntool", "info \"#{filepath}\"")
         shnput = shntool.read()
         data = Utils::shntool_parse(shnput)
@@ -35,10 +34,7 @@ module StreamRoller
         
         sinatra_request.response['Content-length'] = size.to_s
         
-        return @toolman.pipe("flac", "-s -d -c \"#{filepath}\"").pipe("lame", "--silent --cbr -b #{$config['transcode_bitrate']} - -")
-        
-        #command = "#{$flac} -s -d -c \"#{filepath}\" | #{$lame} --silent --cbr -b #{$config['transcode_bitrate']} - -"
-        #halt StaticFile.popen(command)
+        return @toolman.pipe("flac", "-s -d -c \"#{filepath}\"").pipe("lame", "--silent --cbr -b #{$config['transcode_bitrate']} - -").io
         
       end
     end

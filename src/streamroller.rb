@@ -130,8 +130,7 @@ module StreamRoller
     
     get '/get/:id' do
       f = @streamrouter.route(self)
-      halt f.read()
-      f.close()
+      halt f
     end
     
     get '/pic/:id' do

@@ -19,17 +19,19 @@ module StreamRoller
         return self
       end
       
-      def read(*args)
-        if @io.nil?
-          cmds = []
-          @pipe.each do |p|
-            cmds << @toolman.commandline(p[0], p[1])
-          end
-          
-          command = cmds.join(" | ")
-          @io = IO.popen(command)
+      def io
+        cmds = []
+        @pipe.each do |p|
+          cmds << @toolman.commandline(p[0], p[1])
         end
-        @io.read(*args)
+        
+        command = cmds.join(" | ")
+        io = IO.popen(command)
+        return io
+      end
+      
+      def read(*args)
+
       end
       
       def close
