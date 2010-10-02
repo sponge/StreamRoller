@@ -205,6 +205,38 @@ class StreamRoller < Sinatra::Base
       Utils.recursive_dir_structure(path).to_json
     end
   end
+
+  # Get a list of artists and all subalbums
+  get '/artists/?' do
+    structure = {}
+    rows = $db.fetch("SELECT DISTINCT id3_artist, id3_album FROM songs WHERE folder = 'f'")
+    rows.each do |r|
+      if structure[r[:id3_artist]] == nil
+        structure[r[:id3_artist]] = []
+      end
+      structure[r[:id3_artist]].push r[:id3_album]
+    end
+
+    structure.to_json
+  end
+
+  get '/browse/:artist/?' do
+    files = $db[:songs].filter(:id3_artist => params[:artist]).filter({:mimetype => "audio/mpeg"} | {:folder => true}).order(:id3_date).order_more(:id3_album).order_more(:id3_track).order_more(:id3_title).order_more(:file)
+    json = Utils::trim_response(files.to_json).to_json
+    return json
+  end
+
+  get '/browse/:artist/:album/?' do
+    files = $db[:songs]
+    
+    if (params[:artist] != "*")
+      files = files.filter(:id3_artist => params[:artist])
+    end
+    
+    files = files.filter(:id3_album => params[:album]).filter({:mimetype => "audio/mpeg"} | {:folder => true}).order(:id3_date).order_more(:id3_album).order_more(:id3_track).order_more(:id3_title).order_more(:file)
+    json = Utils::trim_response(files.to_json).to_json
+    return json
+  end
   
   get '/m3u' do
     content_type 'application/x-winamp-playlist'

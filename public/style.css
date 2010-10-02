@@ -123,6 +123,16 @@ div.listingGroup div.groupName {
   padding-bottom: 0.25em;
 }
 
+div.listingGroup div.groupName a.addGroup {
+  display: none;
+  cursor: pointer;
+}
+
+
+div.listingGroup:hover div.groupName a.addGroup {
+  display: inline;
+}
+
 div.listingGroup div.groupPhoto {
   width: 96px;
   float: left;
