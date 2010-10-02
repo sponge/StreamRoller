@@ -1,7 +1,7 @@
 ~function() {
 
 var mod = {};
-window.dirDataSource = mod;
+mm.delegates['dirDataSource'] = mod;
 
 var ajaxHandle,
     songCache = []
@@ -13,7 +13,7 @@ mod.getData = function(dir, callback) {
   }
 
   ajaxHandle = $.ajax({
-    url: '/list/'+dir,
+    url: mm.settings.get('baseURL') +'/list/'+ dir,
     dataType: 'json',
     success: showDirCallback,
   });

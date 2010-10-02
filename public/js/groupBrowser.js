@@ -1,7 +1,7 @@
 ~function() {
 
 var mod = {};
-window.groupBrowser = mod;
+mm.delegates.groupBrowser = mod;
 
 mod.draw = function(data, dest) {
 
