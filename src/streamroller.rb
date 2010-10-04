@@ -136,7 +136,7 @@ module StreamRoller
     get '/pic/:id' do
       Timeout.timeout(10) do
         f = $db[:songs].filter(:id => params[:id]).first()
-        return false if f[:art] == 'f'
+        return false if f[:art].nil? or f[:art] == 'f'
         begin
           send_file "art/#{f[:art]}"
         rescue
