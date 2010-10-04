@@ -50,10 +50,6 @@
     mm.browserDelegate = mm.delegates[mm.settings.get('browserDelegate')];
     mm.dataSourceDelegate = mm.delegates[mm.settings.get('dataSourceDelegate')];
 
-    if (!window.console) {
-      window.console = { log: function(){}, dir: function(){} };
-    }
-
     $('#playlist .section_header .options').bind('click', function(e) {
       $('#playlist-settings').toggle()
         .position({
