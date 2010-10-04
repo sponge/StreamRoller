@@ -64,7 +64,7 @@ public class Main
         mainRubyFile = parts[1].replaceAll(" ", "");
       }
     }
-
+    runtime.evalScriptlet("$exec_from_jar = true");
     runtime.evalScriptlet("require '" + mainRubyFile + "'");
   }
 

@@ -1,7 +1,12 @@
-$:.push('src/') if (File.exists? 'src/')
-$:.push('lib/ruby/') if (File.exists? 'lib/ruby/')
-$:.push('lib/java/') if (File.exists? 'lib/java/')
+APP_ROOT = File.dirname(__FILE__.gsub("file:", ""))+"/" #for finding the jar base path when running from jar
+$:.push(APP_ROOT)
 
+$exec_from_jar ||= false #initalized from Main.java as true, if being invoked via jar-file
+
+if not $exec_from_jar
+  $:.push("lib/ruby/") #for the frozen gems and other deps when running in development mode
+  $:.push("lib/java/")
+end
 
 require 'rack'
 require 'rackhacks'
@@ -28,6 +33,6 @@ r = HackBuilder.new do
   
 end
 
-puts "Starting server..."
+puts "Starting server; http://localhost:4567"
 Rack::Handler::Mongrel.run r, :Port => 4567
 

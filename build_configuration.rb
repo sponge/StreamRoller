@@ -9,10 +9,10 @@ c.main_java_file = 'org.streamroller.Main'
 c.source_dirs = ['src', 'lib/ruby']
 c.source_exclude_filter = []
 
-c.compile_ruby_files = true
+c.compile_ruby_files = false
 #c.java_lib_files = []
 c.java_lib_dirs = ['lib/java']
-c.files_to_copy = ['config.yml.example','src/abstracthandler.rb','src/request_handlers/mp3passthrough.rb','src/request_handlers/flac_to_mp3.rb']
+c.files_to_copy = ['config.yml.example']
 
 c.target_jvm_version = 1.5
 #c.jvm_arguments = ""
