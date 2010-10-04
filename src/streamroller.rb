@@ -132,7 +132,19 @@ module StreamRoller
       f = @streamrouter.route(self)
       halt f
     end
-
+    
+    get '/pic/:id' do
+      Timeout.timeout(10) do
+        f = $db[:songs].filter(:id => params[:id]).first()
+        return false if f[:art].nil? or f[:art] == 'f'
+        begin
+          send_file "art/#{f[:art]}"
+        rescue
+          puts "Error sending album art: #{f[:file]} #{$!}"
+        end
+      end
+    end
+    
     get '/dirs/?*/?' do
       Timeout.timeout(10) do
         path = "#{$config['location']}/#{Utils::sanitize params[:splat].join('')}"
