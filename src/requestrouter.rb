@@ -1,4 +1,3 @@
-$:.push('src/') if (File.exists? 'src/')
 require 'abstracthandler'
 
 module StreamRoller
@@ -75,6 +74,20 @@ module StreamRoller
   end
 end
 
-Dir["src/request_handlers/*.rb","src/request_handlers/*.class"].each do |r|
-  require r
+list = nil
+if $exec_from_jar
+  require 'zip/zipfilesystem'
+  Zip::ZipFile.open("StreamRoller.jar") do |zf|
+    list = zf::dir.entries("request_handlers")
+  end
+else
+  list = Dir.entries("#{APP_ROOT}/request_handlers")
 end
+
+list.each do |r|
+  ext = r[/(?:.*\.)(.*$)/, 1]
+  if ext == "rb" or ext == "class"
+    require "request_handlers/#{r}"
+  end
+end
+

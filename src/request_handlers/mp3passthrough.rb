@@ -1,4 +1,4 @@
-require 'src/abstracthandler'
+require 'abstracthandler'
 
 module StreamRoller
   module RequestHandler

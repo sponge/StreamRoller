@@ -10,7 +10,6 @@ require 'timeout'
 require 'java'
 import 'org.sqlite.JDBC'
 
-$:.push('src/') if (File.exists? 'src/')
 require 'utils'
 require 'library'
 require 'toolmanager'
