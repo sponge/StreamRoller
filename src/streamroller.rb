@@ -101,7 +101,7 @@ module StreamRoller
         redirect('/#'+path) if !request.xhr?
         
         mimetype_list = @streamrouter.handled_mimetypes.map{|x| "\"#{x}\""}.join(", ")
-        files = $db.fetch("SELECT * FROM songs WHERE path LIKE ? AND folder = 'f' AND (mimetype IN(#{mimetype_list})) ORDER BY folder DESC, id3_track, file", "#{path}%")
+        files = $db.fetch("SELECT * FROM songs WHERE path LIKE ? AND folder = 'f' AND (mimetype IN(#{mimetype_list})) ORDER BY id3_date DESC, id3_album, id3_track, id3_title, file", "#{path}%")
         
         json = Utils::trim_response(files.to_json).to_json
         
