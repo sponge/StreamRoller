@@ -9,7 +9,7 @@ c.main_java_file = 'org.streamroller.Main'
 c.source_dirs = ['src', 'lib/ruby']
 c.source_exclude_filter = []
 
-c.compile_ruby_files = false
+c.compile_ruby_files = true
 #c.java_lib_files = []
 c.java_lib_dirs = ['lib/java']
 c.files_to_copy = ['config.yml.example']
