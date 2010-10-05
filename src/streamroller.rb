@@ -99,31 +99,12 @@ module StreamRoller
         path = Utils::sanitize params[:splat].join('')   
         redirect('/#'+path) if !request.xhr?
         
-        mimetype_list = @streamrouter.handled_mimetypes.map{|x| "\"#{x}\""}.join(", ")
-        files = $db.fetch("SELECT * FROM songs WHERE path LIKE ? AND folder = 'f' AND (mimetype IN(#{mimetype_list})) ORDER BY id3_date DESC, id3_album, id3_track, id3_title, file", "#{path}%")
+        files = $db[:songs].select(:id, :path, :length, :file, :id3_artist, :id3_track, :id3_album, :id3_title, :id3_date).filter(:path.like("#{path}%")).filter(:folder => false).filter(:mimetype => @streamrouter.handled_mimetypes).order(:id3_date.asc).order_more(:id3_album).order_more(:id3_track).order_more(:id3_title).order_more(:file)
         
-        json = Utils::trim_response(files.to_json).to_json
+        json = Utils::trim_response(files.all).to_json
         
         return "#{params[:callback]}(#{json})" if params[:callback]
         return json
-      end
-    end
-    
-    get '/browse/?' do
-      Timeout.timeout(10) do
-        whereartist = (!params[:artist].to_s.empty?) ? 'WHERE id3_artist = :artist ' : ''
-        
-        artists = Song.find_by_sql('SELECT DISTINCT id3_artist FROM songs ORDER BY id3_artist').map(&:id3_artist)
-        albums = Song.find_by_sql([ 'SELECT DISTINCT id3_album FROM songs ' + whereartist + 'ORDER BY id3_album', {:artist => params[:artist]} ]).map(&:id3_album)
-        songs = []
-        if ( !params[:artist].to_s.empty? || !params[:album].to_s.empty? )
-          cond = {}
-          cond[:id3_artist] = params[:artist] if !params[:artist].to_s.empty?
-          cond[:id3_album] = params[:album] if !params[:album].to_s.empty?
-          songs = Song.find(:all, :select => 'id, id3_title', :conditions => cond, :order => 'folder, id3_track, file ')
-        end
-        
-        { :artists => artists, :albums => albums, :songs => songs }.to_json;
       end
     end
     
@@ -166,22 +147,24 @@ module StreamRoller
     
       # Get a list of artists and all subalbums
   
+    BrowseSelect = [:id, :path, :file, :length, :art, :id3_track, :id3_artist, :id3_album, :id3_title, :id3_date, :mimetype]
 
     get '/browse/:artist/?' do
-      files = $db[:songs].filter(:id3_artist => params[:artist]).filter({:mimetype => "audio/mpeg"} | {:folder => true}).order(:id3_date).order_more(:id3_album).order_more(:id3_track).order_more(:id3_title).order_more(:file)
-      json = Utils::trim_response(files.to_json).to_json
+      files = $db[:songs].select(*BrowseSelect)
+      files = files.filter(:id3_artist => params[:artist]).filter({:mimetype => @streamrouter.handled_mimetypes} | {:folder => true}).order(:id3_date).order_more(:id3_album).order_more(:id3_track).order_more(:id3_title).order_more(:file)
+      json = Utils::trim_response(files.all).to_json
       return json
     end
   
     get '/browse/:artist/:album/?' do
-      files = $db[:songs]
+      files = $db[:songs].select(*BrowseSelect)
       
       if (params[:artist] != "*")
         files = files.filter(:id3_artist => params[:artist])
       end
       
-      files = files.filter(:id3_album => params[:album]).filter({:mimetype => "audio/mpeg"} | {:folder => true}).order(:id3_date).order_more(:id3_album).order_more(:id3_track).order_more(:id3_title).order_more(:file)
-      json = Utils::trim_response(files.to_json).to_json
+      files = files.filter(:id3_album => params[:album]).filter({:mimetype => @streamrouter.handled_mimetypes} | {:folder => true}).order(:id3_date).order_more(:id3_album).order_more(:id3_track).order_more(:id3_title).order_more(:file)
+      json = Utils::trim_response(files.all).to_json
       return json
     end
     

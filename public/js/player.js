@@ -86,10 +86,18 @@ mod.load = function(o, autoplay) {
 }
 
 mod.setInfo = function(o) {
-  var str = '<strong>Now Playing:</strong> '+
-    ((o.id3_title) ? o.id3_title : o.file) +
-    ((o.id3_artist) ? ' <em>by</em> '+ o.id3_artist : '');
-  $('#nowplaying').html(str);
+  var song_title = o.id3_title ? o.id3_title : o.file
+  
+  var p = '<strong>Now Playing:</strong> '+ song_title
+  var t = 'StreamRoller - ' + song_title
+  
+  if(o.id3_artist) {
+    p += ' <em>by</em> ' + o.id3_artist
+    t += ' - ' + o.id3_artist
+  }
+  
+  $('#nowplaying').html(p);
+  $('title').html(t)
   if (o.art) {
     $('#art img').attr('src', '/pic/'+o.id).show();
   } else {

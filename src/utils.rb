@@ -22,12 +22,10 @@ module StreamRoller
     path.chomp('/')
   end
   
-    def self.trim_response(arr)
-    arr = JSON.parse(arr)
+  def self.trim_response(arr)
+    
     arr.each do |hash|
-      hash.each do |k,v|
-        hash.delete(k) if v == '' || v == nil || (k == 'folder' && v == 'f') || (k == 'art' && v == 'f')
-      end
+      hash.delete_if {|k,v| v == '' or v.nil? }
     end
     
     return arr
