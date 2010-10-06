@@ -99,7 +99,7 @@ mod.setInfo = function(o) {
   $('#nowplaying').html(p);
   $('title').html(t)
   if (o.art) {
-    $('#art img').attr('src', '/pic/'+o.id).show();
+    $('#art img').attr('src', '/pic/'+o.id+'/75').show();
   } else {
     $('#art img').attr('src', '').hide();
   }

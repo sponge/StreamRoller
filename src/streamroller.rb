@@ -6,6 +6,7 @@ require 'yaml'
 require 'pp'
 require 'json'
 require 'timeout'
+require 'RMagick'
 
 require 'java'
 import 'org.sqlite.JDBC'
@@ -113,16 +114,32 @@ module StreamRoller
       halt f
     end
     
-    get '/pic/:id' do
+    #TODO: Maybe there's a better way to do optional params with sinatra.
+    def handle_pic(id, size=96)
+      size = size.to_i
       Timeout.timeout(10) do
-        f = $db[:songs].filter(:id => params[:id]).first()
+        f = $db[:songs].filter(:id => id).first()
         return false if f[:art].nil? or f[:art] == 'f'
         begin
-          send_file "art/#{f[:art]}"
+          i = Magick::Image.read("art/#{f[:art]}")[0]
+          r = i.resize(size,size)
+          r.format = $imgformat
+          content_type mime_type($imgformat)
+          s = r.to_blob
+          return s
         rescue
           puts "Error sending album art: #{f[:file]} #{$!}"
         end
       end
+    end
+    private :handle_pic
+    
+    get '/pic/:id/?' do
+      return handle_pic(params[:id])
+    end
+    
+    get '/pic/:id/:size/?' do
+      return handle_pic(params[:id], params[:size])
     end
     
     get '/dirs/?*/?' do

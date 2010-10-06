@@ -45,7 +45,7 @@ mod.renderGroup = function(data) {
   }
   var grp = ['<div class="listingGroup">',
   ,'<div class="groupName">', data[0]['id3_artist'] ,' - ', data[0]['id3_album'] ,' [', data[0]['id3_date'] ,'] <a class="addGroup">(add)</a></div>'
-  ,'<div class="groupPhoto"><img src="/pic/', data[0].id ,'" width="96" height="96"/></div>'
+  ,'<div class="groupPhoto"><img src="/pic/', data[0].id ,'/96" width="96" height="96"/></div>'
   ,'<table class="groupContents" cellspacing="0">'
   ,'  <tbody>'
   , tbody.join('')
