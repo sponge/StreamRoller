@@ -95,7 +95,7 @@ mod.addSongs = function(arr) {
 
 mod.deleteSong = function(e) {
   var i = $(e.currentTarget).attr('data-rowindex');
-  if (i <= curr) {
+  if (i < curr) {
     curr--;
   }
   playlist.splice(i, 1);
