@@ -159,7 +159,10 @@ module StreamRoller
       size = size.to_i
       Timeout.timeout(10) do
         begin
-          return cached_pic(id, size)
+          pic = cached_pic(id, size)
+          return pic if pic
+          #else
+          redirect '/placeholder.png'
         rescue
           puts "Error sending album art: #{id} #{$!}"
         end
