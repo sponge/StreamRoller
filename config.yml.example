@@ -2,6 +2,7 @@ location: D:/mp3/
 db: library.sqlite
 skip_discovery: true
 skip_album_art: false
+cache_thumbnails: true
 
 handlers:
     flac_to_mp3:

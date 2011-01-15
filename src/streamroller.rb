@@ -114,21 +114,54 @@ module StreamRoller
       halt f
     end
     
+    def cached_pic(id, size)
+      size = size.to_i
+      f = $db[:songs].filter(:id => id).first()
+      
+      uncached_path = "art/#{f[:art]}"
+      
+      return false if f[:art].nil? or f[:art] == 'f'
+      return false if not File.exists?(uncached_path)
+      
+      if $config['cache_thumbnails']
+        begin
+          Dir.mkdir("art/#{size}")
+        rescue Errno::EEXIST
+        end
+        
+        path = "art/#{size}/#{id}.#{$imgformat}"
+        if File.exists?(path)
+          return File.new(path).read
+        end
+        
+        cached = File.new(path, "w")
+        converted = convert_pic(uncached_path, size)
+        cached.write(converted)
+        cached.close
+        
+        return converted
+      end
+      
+      return convert_pic(uncached_path, size)
+    end
+    
+    def convert_pic(path, size)
+      i = Magick::Image.read(path)[0]
+      r = i.resize(size,size)
+      r.format = $imgformat
+      content_type mime_type($imgformat)
+      s = r.to_blob
+      return s
+    end
+    
     #TODO: Maybe there's a better way to do optional params with sinatra.
     def handle_pic(id, size=96)
       size = size.to_i
       Timeout.timeout(10) do
-        f = $db[:songs].filter(:id => id).first()
-        return false if f[:art].nil? or f[:art] == 'f'
         begin
-          i = Magick::Image.read("art/#{f[:art]}")[0]
-          r = i.resize(size,size)
-          r.format = $imgformat
-          content_type mime_type($imgformat)
-          s = r.to_blob
-          return s
+          return cached_pic(id, size)
         rescue
-          puts "Error sending album art: #{f[:file]} #{$!}"
+          puts "Error sending album art: #{id} #{$!}"
         end
       end
     end
