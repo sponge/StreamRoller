@@ -315,6 +315,21 @@ div.listingGroup table.groupContents td:nth-child(3) {
 
 /* Settings dialog */
 
+#settings-button {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100px;
+  z-index: 20;
+}
+
+#inner-settings {
+  background-color: #151515;
+  padding: 20px;
+  height: 60%;
+}
+
+
 #playlist-settings, #settings {
   display: none;
 }

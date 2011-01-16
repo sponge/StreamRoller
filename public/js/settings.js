@@ -8,7 +8,7 @@ mm.settings = mod;
 
 var defaults = {
     'baseURL': '',
-    'dataSourceDelegate': 'dirDataSource',
+    'dataSourceDelegate': 'artistDataSource',
     'browserDelegate': 'groupBrowser'
 };
 
@@ -16,21 +16,26 @@ mod.init = function() {
 };
 
 mod.show = function() {
+  tree = this.get("dataSourceDelegate");
+  $("#settings-" + tree).attr('checked', true);
   $('#settings').dialog({
 	resizable: false,
-    width: 450,
-	height: 140,
+        width: 640,
+	height: 480,
 	modal: true,
-    draggable: false,
-    title: 'StreamRoller Settings',
+        draggable: false,
+        title: 'StreamRoller Settings',
 	buttons: {
-      OK: function() {
-	    $(this).dialog('close');
-	  },
-	  Cancel: function() {
-	    $(this).dialog('close');
-	  }
-	}
+          OK: function() {
+              tree = $("#inner-settings :checked").val()
+              mm.settings.set("dataSourceDelegate", tree);
+              mm.init();
+              $(this).dialog('close');
+          },
+          Cancel: function() {
+              $(this).dialog('close');
+          }
+        }
   });
 };
 

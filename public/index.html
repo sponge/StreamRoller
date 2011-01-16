@@ -31,9 +31,17 @@
 </head>
 <body>
 
+  <div id="settings-button">
+    <a href="#">Settings</a>
+  </div>
+
 <div id="settings">
   <h1>StreamRoller Settings</h1>
-  <p>lorem ipsum</p>
+  <div id="inner-settings">
+    <h3>Tree Style:</h3>
+    <input type="radio" name="tree-style" value="artistDataSource" id="settings-artistDataSource" /><label for="settings-artistDataSource">Artist</label><br />
+    <input type="radio" name="tree-style" value="dirDataSource" id="settings-dirDataSource" /><label for="settings-dirDataSource">Directory</label><br />
+  </div>
 </div>
 
 <div id="playlist-settings">
@@ -92,6 +100,11 @@
   mm.player.init();
   mm.playlist.init();
   mm.init();
+
+  $("#settings-button").click(function(){
+    mm.settings.show();
+    return false;
+  });
 </script>
 </body>
 </html>
