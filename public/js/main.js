@@ -46,6 +46,12 @@
     mm.playlist.generateM3U();
   };
 
+  mm.reload = function() {
+    mm.browserDelegate = mm.delegates[mm.settings.get('browserDelegate')];
+    mm.dataSourceDelegate = mm.delegates[mm.settings.get('dataSourceDelegate')];
+    mm.dataSourceDelegate.getFolderView('#folders .content');
+  }
+
   mm.init = function() {
     mm.browserDelegate = mm.delegates[mm.settings.get('browserDelegate')];
     mm.dataSourceDelegate = mm.delegates[mm.settings.get('dataSourceDelegate')];

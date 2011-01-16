@@ -29,7 +29,7 @@ mod.show = function() {
           OK: function() {
               tree = $("#inner-settings :checked").val()
               mm.settings.set("dataSourceDelegate", tree);
-              mm.init();
+              mm.reload();
               $(this).dialog('close');
           },
           Cancel: function() {
