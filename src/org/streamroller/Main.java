@@ -65,7 +65,7 @@ public class Main
       }
     }
     runtime.evalScriptlet("$exec_from_jar = true");
-    runtime.evalScriptlet("require '" + mainRubyFile + "'");
+    runtime.evalScriptlet("puts 'Hello, world!'");
   }
 
   public static URL getResource(String path) {
