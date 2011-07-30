@@ -3,3 +3,4 @@ art/*.*
 package/
 ./*.log
 config.yml
+*.swp
