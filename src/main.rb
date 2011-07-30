@@ -1,12 +1,4 @@
 APP_ROOT = File.dirname(__FILE__.gsub("file:", ""))+"/" #for finding the jar base path when running from jar
-$:.push(APP_ROOT)
-
-$exec_from_jar ||= false #initalized from Main.java as true, if being invoked via jar-file
-
-if not $exec_from_jar
-  $:.push("lib/ruby/") #for the frozen gems and other deps when running in development mode
-  $:.push("lib/java/")
-end
 
 require 'rack'
 require 'rackhacks'

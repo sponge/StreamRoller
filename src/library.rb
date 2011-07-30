@@ -1,5 +1,4 @@
-require 'lib/java/jaudiotagger-2.0.2.jar'
-require 'lib/java/sqlitejdbc-3.6.3.054.jar'
+require 'lib/jaudiotagger-2.0.2.jar'
 
 module StreamRoller
   module Library

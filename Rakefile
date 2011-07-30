@@ -19,6 +19,9 @@ task :build do
 
   sh "jar cfm streamroller.jar Manifest.txt -C classes org/streamroller/"
   sh "mv streamroller.jar build/"
+  sh "cp -r src/ build/"
+  sh "cp -r lib/ruby build/libruby"
+  sh "cp config.yml.example build/"
   sh "rm Manifest.txt"
   
 end
