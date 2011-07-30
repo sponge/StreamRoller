@@ -6,3 +6,5 @@ config.yml
 *.swp
 build/*
 *.class
+.bundle/
+vendor/

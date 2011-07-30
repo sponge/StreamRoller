@@ -1,13 +1,15 @@
 APP_ROOT = File.dirname(__FILE__.gsub("file:", ""))+"/" #for finding the jar base path when running from jar
+$:.push("src/")
 
-require 'rack'
-require 'rackhacks'
+require 'rubygems'
+require 'bundler/setup'
+Bundler.require(:default)
 require 'streamroller'
+require 'rackhacks'
 
 additional_mime = {".flac" => "audio/x-flac"}
 Rack::Mime::MIME_TYPES.merge!(additional_mime)
 
-require 'RMagick'
 =begin
 #JPG seems to be broken, force PNG for now
 $imgformat = "jpg"

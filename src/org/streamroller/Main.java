@@ -64,9 +64,7 @@ public class Main
         mainRubyFile = parts[1].replaceAll(" ", "");
       }
     }
-    runtime.evalScriptlet("$:.push 'src/'");
-    runtime.evalScriptlet("$:.push 'libruby/'");
-    runtime.evalScriptlet("require 'main'");
+    runtime.evalScriptlet("require 'src/main'");
   }
 
   public static URL getResource(String path) {
