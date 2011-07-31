@@ -1,3 +1,4 @@
+require 'java'
 require 'lib/jaudiotagger-2.0.2.jar'
 
 module StreamRoller

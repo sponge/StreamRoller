@@ -1,21 +1,8 @@
-require 'rubygems'
-require 'jdbc/sqlite3'
-require 'sequel'
-require 'sinatra'
-require 'yaml'
-require 'pp'
-require 'json'
-require 'timeout'
-require 'RMagick'
-
-require 'java'
-import 'org.sqlite.JDBC'
-
+require 'initialization_helper'
 require 'utils'
 require 'library'
 require 'toolmanager'
 require 'requestrouter'
-require 'initialization_helper'
 
 class Sequel::Dataset
   def to_json
