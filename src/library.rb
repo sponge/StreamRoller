@@ -32,17 +32,14 @@ module StreamRoller
       
       songs = $db[:songs]
       Dir.chdir(dir) do
-        files = []
-        Dir['{**/*/,**/*.mp3,**/*.flac}'].each do |file|
-          files.push(file)
-        end
+        #TODO: This glob should really be built dynamically! Every handler should register some extensions. It doesn't matter if that handler actually works at the time, since the mimetypes are filtered at runtime. But at library-build time, we should add the tags for everything that can potentially be played.
+        files = Dir['{**/*/,**/*.mp3,**/*.flac}']
         
-        len = files.length
+        len = files.size
         $db.transaction do
-          files.each_index do |i|
+          files.each_with_index do |file, i|
             puts "#{i.to_s}/#{len.to_s} songs scanned" if (i % 100 == 0)
             
-            file = files[i]
             fields = {}
             
             begin
@@ -76,7 +73,6 @@ module StreamRoller
     end
     
     def self.scan_album_art(base)
-      #songs = Song.find(:all, :conditions => { :art => nil, :folder => 'f' })
       songs = $db[:songs].where(:art => nil, :folder => 'f')
       songs.all do |song|      
         begin
