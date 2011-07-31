@@ -63,7 +63,7 @@ module StreamRoller
       halt f
     end
     
-    def cached_pic(id, size)
+    def get_pic(id, size)
       size = size.to_i
       f = $db[:songs].filter(:id => id).first()
       
@@ -73,25 +73,29 @@ module StreamRoller
       return false if not File.exists?(uncached_path)
       
       if $config['cache_thumbnails']
-        begin
-          Dir.mkdir("art/#{size}")
-        rescue Errno::EEXIST
-        end
-        
-        path = "art/#{size}/#{id}.#{$imgformat}"
-        if File.exists?(path)
-          return File.new(path).read
-        end
-        
-        cached = File.new(path, "w")
-        converted = convert_pic(uncached_path, size)
-        cached.write(converted)
-        cached.close
-        
-        return converted
+        cached_pic(id, size, uncached_path)
       end
       
       return convert_pic(uncached_path, size)
+    end
+
+    def cached_pic(id, size, uncached_path)
+      begin
+        Dir.mkdir("art/#{size}")
+      rescue Errno::EEXIST
+      end
+
+      path = "art/#{size}/#{id}.#{$imgformat}"
+      if File.exists?(path)
+        return File.new(path).read
+      end
+
+      cached = File.new(path, "w")
+      converted = convert_pic(uncached_path, size)
+      cached.write(converted)
+      cached.close
+
+      return converted
     end
     
     def convert_pic(path, size)
@@ -108,7 +112,7 @@ module StreamRoller
       size = size.to_i
       Timeout.timeout(10) do
         begin
-          pic = cached_pic(id, size)
+          pic = get_pic(id, size)
           return pic if pic
           #else
           redirect '/placeholder.png'
@@ -152,8 +156,14 @@ module StreamRoller
     BrowseSelect = [:id, :path, :file, :length, :art, :id3_track, :id3_artist, :id3_album, :id3_title, :id3_date, :mimetype]
 
     get '/browse/:artist/?' do
-      files = $db[:songs].select(*BrowseSelect)
-      files = files.filter(:id3_artist => params[:artist]).filter({:mimetype => @streamrouter.handled_mimetypes} | {:folder => true}).order(:id3_date).order_more(:id3_album).order_more(:id3_track).order_more(:id3_title).order_more(:file)
+      files = $db[:songs].select(*BrowseSelect).
+        filter(:id3_artist => params[:artist]).
+        filter({:mimetype => @streamrouter.handled_mimetypes} | {:folder => true}).
+        order(:id3_date).order_more(:id3_album).
+        order_more(:id3_track).
+        order_more(:id3_title).
+        order_more(:file)
+
       json = Utils::trim_response(files.all).to_json
       return json
     end
@@ -165,7 +175,13 @@ module StreamRoller
         files = files.filter(:id3_artist => params[:artist])
       end
       
-      files = files.filter(:id3_album => params[:album]).filter({:mimetype => @streamrouter.handled_mimetypes} | {:folder => true}).order(:id3_date).order_more(:id3_album).order_more(:id3_track).order_more(:id3_title).order_more(:file)
+      files = files.filter(:id3_album => params[:album]).
+        filter({:mimetype => @streamrouter.handled_mimetypes} | {:folder => true}).
+        order(:id3_date).order_more(:id3_album).
+        order_more(:id3_track).
+        order_more(:id3_title).
+        order_more(:file)
+
       json = Utils::trim_response(files.all).to_json
       return json
     end
