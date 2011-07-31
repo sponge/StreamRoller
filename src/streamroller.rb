@@ -3,19 +3,8 @@ require 'utils'
 require 'library'
 require 'toolmanager'
 require 'requestrouter'
-
-class Sequel::Dataset
-  def to_json
-    naked.all.to_json
-  end
-end
-
-class Sequel::Model
-  def self.to_json
-    dataset.to_json
-  end
-end
-
+require 'sequel_extensions'
+require 'timeout'
 
 module StreamRoller
   class StreamRoller < Sinatra::Base
