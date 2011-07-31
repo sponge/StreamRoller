@@ -1,4 +1,3 @@
-APP_ROOT = File.dirname(__FILE__.gsub("file:", ""))+"/" #for finding the jar base path when running from jar
 $:.push("src/")
 
 require 'rubygems'

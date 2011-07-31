@@ -74,15 +74,7 @@ module StreamRoller
   end
 end
 
-list = nil
-if $exec_from_jar
-  require 'zip/zipfilesystem'
-  Zip::ZipFile.open("StreamRoller.jar") do |zf|
-    list = zf::dir.entries("request_handlers")
-  end
-else
-  list = Dir.entries("#{APP_ROOT}/request_handlers")
-end
+list = Dir.entries("src/request_handlers")
 
 list.each do |r|
   ext = r[/(?:.*\.)(.*$)/, 1]
