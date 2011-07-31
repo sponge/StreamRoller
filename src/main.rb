@@ -28,7 +28,7 @@ $imgformat = "png"
 
 m = StreamRoller::StreamRoller.new
 
-r = HackBuilder.new do
+r = Rack::Builder.new do
   map '/get' do
     run m
   end
