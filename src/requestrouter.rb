@@ -59,13 +59,13 @@ module StreamRoller
       return @handlers.keys
     end
     
-    def route(sinatra_request)
-      r = $db[:songs].filter(:id => sinatra_request.params[:id]).first()
-      puts "#{Time.new.strftime("%m/%d %H:%M:%S")} #{sinatra_request.request.env['REMOTE_ADDR']}: #{( (r[:id3_artist] && r[:id3_title] ) ? "#{r[:id3_artist]} - #{r[:id3_title]}" : r[:file])}"
+    def route(sinatra_response)
+      r = $db[:songs].filter(:id => sinatra_response.params[:id]).first()
+      puts "#{Time.new.strftime("%m/%d %H:%M:%S")} #{sinatra_response.request.env['REMOTE_ADDR']}: #{( (r[:id3_artist] && r[:id3_title] ) ? "#{r[:id3_artist]} - #{r[:id3_title]}" : r[:file])}"
       throw RuntimeError("Unhandled mimetype! How did this happen?") unless handled_mimetypes.include?(r[:mimetype])
       
       @handlers[r[:mimetype]].each do |h|
-        p = h.handle(sinatra_request, r)
+        p = h.handle_request(sinatra_response, r)
         return p unless p.nil?
       end
       

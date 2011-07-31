@@ -7,13 +7,13 @@ module StreamRoller
       priority 100
       config_name "mp3passthrough"
       
-      def handle( sinatra_request, dbrow )
+      def handle
         #here is where we would determine if the client can accept mp3s
         
-        f = Sinatra::Helpers::StaticFile.new($config['location'] + dbrow[:path] + '/' + dbrow[:file], 'rb')
-        sinatra_request.content_type mime_type(".mp3")
-        sinatra_request.attachment File.basename(dbrow[:file])
-        sinatra_request.response['Content-length'] = File.size(f.path).to_s
+        f = Sinatra::Helpers::StaticFile.new(@filepath, 'rb')
+        @response.content_type mime_type(".mp3")
+        @response.attachment @filename
+        @response.response['Content-length'] = File.size(@filepath).to_s
         return f
       end
     end

@@ -100,6 +100,14 @@ module StreamRoller
         self.add_handler(subclass)
         self.sub_inherited(subclass)
       end
+
+      def handle_request(sinatra_response, dbrow)
+        @response = sinatra_response
+        @dbrow = dbrow
+        @filepath = $config['location'] + @dbrow[:path] + '/' + @dbrow[:file]
+        @filename = @dbrow[:file]
+        handle
+      end
     end
   end
 end

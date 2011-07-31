@@ -15,12 +15,25 @@ module StreamRoller
       
       default_config({ "bitrate" => 128 })
       
-      def handle(sinatra_request, dbrow)
-        
-        sinatra_request.content_type mime_type(".mp3")
-        sinatra_request.attachment File.basename(dbrow[:file], ".flac") + ".mp3"
-        filepath = $config['location'] + dbrow[:path] + '/' + dbrow[:file]
-        shntool = @toolman.invoke("shntool", "info \"#{filepath}\"")
+      def handle
+        set_sinatra_http_response_properties
+        return transcode_flac_to_mp3
+      end
+
+      private
+
+      def set_sinatra_http_response_properties
+        @response.content_type mime_type(".mp3")
+        @response.attachment File.basename(@filename, ".flac") + ".mp3"
+        @response.response['Content-length'] = estimate_transcoded_mp3_size.to_s
+      end
+
+      def transcode_flac_to_mp3
+        @toolman.pipe("flac", "-s -d -c \"#{@filepath}\"").pipe("lame", "--silent --cbr -b #{@config['bitrate']} - -").io
+      end
+
+      def estimate_transcoded_mp3_size
+        shntool = @toolman.invoke("shntool", "info \"#{@filepath}\"")
         shnput = shntool.read()
         data = Utils::shntool_parse(shnput)
         
@@ -32,11 +45,6 @@ module StreamRoller
         total = ms + seconds * 1000 + minutes * 60 * 1000
         size = total * @config['bitrate'].to_i
         size = (size.to_f / 8.0).ceil
-        
-        sinatra_request.response['Content-length'] = size.to_s
-        
-        return @toolman.pipe("flac", "-s -d -c \"#{filepath}\"").pipe("lame", "--silent --cbr -b #{@config['bitrate']} - -").io
-        
       end
     end
   end
