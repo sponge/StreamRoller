@@ -15,17 +15,14 @@ require 'utils'
 require 'library'
 require 'toolmanager'
 require 'requestrouter'
+require 'initialization_helper'
 
-class Song
-  def to_json
-    to_s.to_json
-  end
-end
 class Sequel::Dataset
   def to_json
     naked.all.to_json
   end
 end
+
 class Sequel::Model
   def self.to_json
     dataset.to_json
@@ -35,6 +32,7 @@ end
 
 module StreamRoller
   class StreamRoller < Sinatra::Base
+    include InitializationHelper
     
     set :static, true
     set :public, 'public/'
@@ -43,43 +41,10 @@ module StreamRoller
     def initialize
       super
       
-      # check environment
-      if File.exists? 'config.yml'
-        $config = YAML::load( File.open('config.yml') )
-        $config['location'] += '/'
-      else
-        puts "config.yml not found. Exiting."
-        exit -1
-      end
-      
-      $db = Sequel.connect("jdbc:sqlite:#{$config['db']}")
-      
-      # library generation
-      if !$db.table_exists?(:songs) or !$config['skip_discovery']
-        puts "Table not found, creating and forcing library discovery" if !$db.table_exists?(:songs)
-        $db.create_table! :songs do
-          primary_key :id
-          String :path, :null => false
-          String :file, :null => false
-          boolean :folder, :default => false
-          integer :length
-          String :art
-          integer :id3_track
-          String :id3_artist
-          String :id3_album
-          String :id3_title
-          String :id3_date
-          String :mimetype
-        end
-        Library::scan($config['location'])
-      end
-      
-      FileUtils.mkdir('art') if !File.directory?('art')
-      if (!$config['skip_album_art'])
-        Thread.new do
-          Library::scan_album_art($config['location'])
-        end
-      end
+      load_config
+      init_database
+      init_song_library
+      init_art
       
       @toolmanager = ToolManager.new
       @streamrouter = RequestRouter.new(@toolmanager)
@@ -100,7 +65,15 @@ module StreamRoller
         path = Utils::sanitize params[:splat].join('')   
         redirect('/#'+path) if !request.xhr?
         
-        files = $db[:songs].select(:id, :path, :length, :file, :id3_artist, :id3_track, :id3_album, :id3_title, :id3_date).filter(:path.like("#{path}%")).filter(:folder => false).filter(:mimetype => @streamrouter.handled_mimetypes).order(:id3_date.asc).order_more(:id3_album).order_more(:id3_track).order_more(:id3_title).order_more(:file)
+        files = $db[:songs].select(:id, :path, :length, :file, :id3_artist, :id3_track, :id3_album, :id3_title, :id3_date).
+          filter(:path.like("#{path}%")).
+          filter(:folder => false).
+          filter(:mimetype => @streamrouter.handled_mimetypes).
+          order(:id3_date.asc).
+          order_more(:id3_album).
+          order_more(:id3_track).
+          order_more(:id3_title).
+          order_more(:file)
         
         json = Utils::trim_response(files.all).to_json
         
