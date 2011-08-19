@@ -2,6 +2,7 @@ desc "Build the app in build/"
 task :build do
 
   sh "mkdir -p build/lib"
+  sh "mkdir -p classes"
   sh "javac -d classes -cp src:lib/*:. src/org/streamroller/*.java"
 
   lib_jars = FileList.new("lib/*.jar")
