@@ -33,24 +33,3 @@ end
 =end
 $imgformat = "png"
 
-m = StreamRoller::StreamRoller.new
-
-r = Rack::Builder.new do
-  map '/get' do
-    run m
-  end
-  
-  map '/pic' do
-    run m
-  end
-  
-  map '/' do
-    use Rack::Deflater
-    run m
-  end
-  
-end
-
-puts "Starting server; http://localhost:4567"
-Rack::Handler::Mongrel.run r, :Port => 4567
-

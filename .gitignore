@@ -11,3 +11,5 @@ vendor/
 tags
 .rvmrc
 .rbenv-version
+log/
+tmp/
