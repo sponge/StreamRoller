@@ -1,5 +1,5 @@
 library.sqlite
-art/*.*
+art/
 package/
 ./*.log
 config.yml
@@ -10,3 +10,4 @@ build/*
 vendor/
 tags
 .rvmrc
+.rbenv-version
