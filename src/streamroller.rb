@@ -5,6 +5,7 @@ require 'toolmanager'
 require 'requestrouter'
 require 'sequel_extensions'
 require 'timeout'
+require 'java_image'
 
 module StreamRoller
   class StreamRoller < Sinatra::Base
@@ -101,12 +102,7 @@ module StreamRoller
     end
     
     def convert_pic(path, size)
-      i = Magick::Image.read(path)[0]
-      r = i.resize(size,size)
-      r.format = $imgformat
-      content_type mime_type($imgformat)
-      s = r.to_blob
-      return s
+      JavaImage.load(path).resize(size, size).to_blob
     end
     
     #TODO: Maybe there's a better way to do optional params with sinatra.
