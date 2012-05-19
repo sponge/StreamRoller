@@ -16,22 +16,24 @@ module StreamRoller
     
     def initialize
       super
-      
+
       load_config
       init_database
       init_song_library
       init_art
-      
+
       @toolmanager = ToolManager.new
       @streamrouter = RequestRouter.new(@toolmanager)
-      
+
       puts "Tools discovered:"
       puts @toolmanager.available_tools.join(", ")
-      
+
       puts "Supported mimetypes:"
       puts @streamrouter.handled_mimetypes.join(", ")
+
+      set :run, false # convince sinatra that it doesn't need to start after trinidad has finished
     end
-    
+
     get '/' do
       send_file 'public/index.html'
     end
