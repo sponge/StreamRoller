@@ -5,6 +5,14 @@ require 'bundler/setup'
 Bundler.require(:default)
 require 'streamroller'
 require 'rackhacks'
+require 'java'
+
+# Make jaudiotagger stfu
+
+import 'java.util.logging.LogManager'
+import 'java.io.StringBufferInputStream'
+
+LogManager.getLogManager.read_configuration(java.io.StringBufferInputStream.new("org.jaudiotagger.level = SEVERE"))
 
 additional_mime = {".flac" => "audio/x-flac"}
 Rack::Mime::MIME_TYPES.merge!(additional_mime)

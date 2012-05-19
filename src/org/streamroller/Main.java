@@ -8,7 +8,6 @@ import javax.swing.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Properties;
-import java.util.logging.LogManager;
 import org.jruby.Ruby;
 import org.jruby.RubyInstanceConfig;
 import org.jruby.javasupport.JavaEmbedUtils;
@@ -19,9 +18,6 @@ public class Main
   private static Boolean useConsole = false;
   public static void main(String[] args) throws Exception
   {
-    
-    LogManager.getLogManager().readConfiguration(new StringBufferInputStream("org.jaudiotagger.level = OFF"));    
-    
     for (int i = 0; i < args.length; i++) {
       if (args[i].equals("--console")) {
         useConsole = true;
