@@ -1,6 +1,7 @@
 $:.push("src/")
 
 require 'rubygems'
+gem 'rmagick4j'
 require 'bundler/setup'
 Bundler.require(:default)
 require 'streamroller'
