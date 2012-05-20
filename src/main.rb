@@ -17,18 +17,37 @@ Rack::Mime::MIME_TYPES.merge!(additional_mime)
 
 $imgformat = "jpg"
 
+if File.exists? 'config.yml'
+  $config = YAML::load_file('config.yml')
+  $config['location'] += '/'
+else
+  puts "config.yml not found. Exiting."
+  exit -1
+end
+
+def authenticate
+  if $config['password']
+    use Rack::Auth::Basic, "Restricted Area" do |username, password|
+      $config['password'] == password
+    end
+  end
+end
+
 m = StreamRoller::StreamRoller.new
 
 r = Rack::Builder.new do
   map '/get' do
+    authenticate
     run m
   end
 
   map '/pic' do
+    authenticate
     run m
   end
 
   map '/' do
+    authenticate
     use Rack::Deflater
     run m
   end

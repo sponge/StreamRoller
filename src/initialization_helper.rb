@@ -3,16 +3,6 @@ require "yaml"
 module StreamRoller
   module InitializationHelper
 
-    def load_config
-      if File.exists? 'config.yml'
-        $config = YAML::load_file('config.yml')
-        $config['location'] += '/'
-      else
-        puts "config.yml not found. Exiting."
-        exit -1
-      end
-    end
-
     def init_database
       $db = Sequel.connect("jdbc:sqlite:#{$config['db']}")
     end
@@ -48,6 +38,12 @@ module StreamRoller
         Thread.new do
           Library::scan_album_art($config['location'])
         end
+      end
+    end
+
+    def init_http_auth
+      if $config['password']
+
       end
     end
   end

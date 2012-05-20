@@ -20,7 +20,6 @@ module StreamRoller
     def initialize
       super
 
-      load_config
       init_database
       init_song_library
       init_art

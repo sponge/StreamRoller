@@ -3,12 +3,13 @@ db: library.sqlite
 skip_discovery: true
 skip_album_art: false
 cache_thumbnails: true
+# password: pass
 
 handlers:
     flac_to_mp3:
         enabled: true
         bitrate: 128
-    
+
     mp3passthrough:
         enabled: true
 
