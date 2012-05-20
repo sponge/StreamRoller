@@ -6,7 +6,6 @@ module StreamRoller
     class FlacToMP3 < AbstractHandler
       input_mimetype "audio/x-flac"
       output_mimetype "audio/mpeg"
-      priority 50
 
       require_tool "flac"
       require_tool "lame"
@@ -17,6 +16,10 @@ module StreamRoller
       def handle
         set_sinatra_http_response_properties
         return transcode_flac_to_mp3
+      end
+
+      def priority
+        50
       end
 
       private

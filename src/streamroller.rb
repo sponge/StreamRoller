@@ -37,6 +37,7 @@ module StreamRoller
     end
 
     get '/' do
+      puts self.request.user_agent
       send_file 'public/index.html'
     end
 
