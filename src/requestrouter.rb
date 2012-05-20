@@ -73,7 +73,8 @@ module StreamRoller
         return p unless p.nil?
       end
 
-      throw RuntimeError("None of the registered handlers for #{r[:mimetype]} actually handled!")
+      puts "None of the registered handlers for #{r[:mimetype]} actually handled; user agent was #{sinatra_response.request.user_agent}"
+      sinatra_response.halt 415
     end
   end
 end
