@@ -159,6 +159,12 @@ module StreamRoller
 
       # Get a list of artists and all subalbums
 
+    def add_available_output_mimetypes!(files)
+      files.each do |file|
+        file[:available_as] = @streamrouter.mimetype_mappings[file[:mimetype]]
+      end
+    end
+
     BrowseSelect = [:id, :path, :file, :length, :art, :id3_track, :id3_artist, :id3_album, :id3_title, :id3_date, :mimetype]
 
     get '/browse/:artist/?' do
@@ -171,8 +177,9 @@ module StreamRoller
         order_more(:id3_title).
         order_more(:file)
 
-      json = Utils::trim_response(files.all).to_json
-      return json
+      files = Utils::trim_response(files.all)
+      add_available_output_mimetypes!(files)
+      return files.to_json
     end
 
     get '/browse/:artist/:album/?' do
@@ -190,8 +197,9 @@ module StreamRoller
         order_more(:id3_title).
         order_more(:file)
 
-      json = Utils::trim_response(files.all).to_json
-      return json
+      files = Utils::trim_response(files.all)
+      add_available_output_mimetypes!(files)
+      return files.to_json
     end
 
     get '/m3u' do
