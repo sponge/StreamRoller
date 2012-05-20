@@ -20,13 +20,13 @@ task :build do
   sh "jar cfm streamroller.jar Manifest.txt -C classes org/streamroller/"
   sh "mv streamroller.jar build/"
   sh "cp -r src/ build/"
+  sh "cp -r public/ build/"
 
   sh "bundle install --deployment"
   sh "cp -r vendor/ build/"
 
   sh "cp config.yml.example build/"
   sh "rm Manifest.txt"
-  
 end
 
 desc "Cleans the build/ directory"

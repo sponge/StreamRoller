@@ -1,3 +1,5 @@
+require 'sequel'
+
 class Sequel::Dataset
   def to_json
     naked.all.to_json

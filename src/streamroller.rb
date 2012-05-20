@@ -1,3 +1,4 @@
+require 'sinatra'
 require 'initialization_helper'
 require 'utils'
 require 'library'
@@ -5,6 +6,7 @@ require 'toolmanager'
 require 'requestrouter'
 require 'sequel_extensions'
 require 'timeout'
+require 'json'
 
 module StreamRoller
   class StreamRoller < Sinatra::Base

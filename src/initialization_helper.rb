@@ -1,3 +1,5 @@
+require "yaml"
+
 module StreamRoller
   module InitializationHelper
 
