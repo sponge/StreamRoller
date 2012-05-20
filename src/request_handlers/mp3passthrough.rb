@@ -3,7 +3,8 @@ require 'abstracthandler'
 module StreamRoller
   module RequestHandler
     class MP3Passthrough < AbstractHandler
-      support_mimetype "audio/mpeg"
+      input_mimetype "audio/mpeg"
+      output_mimetype "audio/mpeg"
       priority 100
       config_name "mp3passthrough"
       

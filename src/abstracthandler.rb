@@ -41,11 +41,12 @@ module StreamRoller
       
       @required_tools = []
       @priority = -1
-      @supported_mimetypes = []
+      @input_mimetype = nil
+      @output_mimetype = nil
       @config_name = nil
       @default_config = {}
       
-      inheritable_attributes :supported_mimetypes, :priority, :required_tools, :config_name, :default_config
+      inheritable_attributes :input_mimetype, :output_mimetype, :priority, :required_tools, :config_name, :default_config
       
       @handlers = []
       
@@ -59,12 +60,22 @@ module StreamRoller
           return @priority
         end
         
-        def support_mimetype(mimetype)
-          @supported_mimetypes << mimetype
+        def input_mimetype(mimetype)
+          raise ArgumentError, "Input mimetype can only be set once! Was already set to #{@input_mimetype}" unless @input_mimetype == "@input_mimetype"
+          @input_mimetype = mimetype
+        end
+
+        def output_mimetype(mimetype)
+          raise ArgumentError, "Output mimetype can only be set once! Was already set to #{@output_mimetype}" unless @output_mimetype == "@output_mimetype"
+          @output_mimetype = mimetype
         end
         
-        def supported_mimetypes
-          return @supported_mimetypes
+        def supported_input
+          return @input_mimetype 
+        end
+
+        def supported_output
+          return @output_mimetype
         end
         
         def required_tools

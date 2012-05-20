@@ -40,11 +40,5 @@ module StreamRoller
         end
       end
     end
-
-    def init_http_auth
-      if $config['password']
-
-      end
-    end
   end
 end

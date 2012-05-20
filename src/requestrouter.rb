@@ -6,17 +6,18 @@ module StreamRoller
     def initialize(toolman = nil)
       #if toolman is nil, no toolmanager and therefore no tools are available,
       #limiting available handler to likely just passthroughs
-      
+
       if toolman.nil?
         available_tools = []
       else
         available_tools = toolman.available_tools
       end
-      
-      @handlers = {}
-      
+
+      @handlers = Hash.new {|h,k| h[k] = []}
+      @mappings = Hash.new {|h,k| h[k] = []}
+
       conf_handlers = $config["handlers"]
-      
+
       RequestHandler::AbstractHandler.defined_handlers.each do |h|
         #handlers must have a configuration name
         next if h.config_name.nil?
@@ -40,14 +41,12 @@ module StreamRoller
             break
           end
         end
-        
+
         next unless cont
-        
-        h.supported_mimetypes.each do |m|
-          @handlers[m] ||= []
-          @handlers[m] << h.new(toolman, config)
-        end
-      
+
+        @handlers[h.supported_input] << h.new(toolman, config)
+        @mappings[h.supported_input] << h.supported_output
+
         @handlers.each do |k,v|
           #decending order
           v.sort!{|a,b| b.priority <=> a.priority}
@@ -57,6 +56,10 @@ module StreamRoller
     
     def handled_mimetypes
       return @handlers.keys
+    end
+
+    def mimetype_mappings
+      @mappings
     end
     
     def route(sinatra_response)
