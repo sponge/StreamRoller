@@ -28,7 +28,7 @@ module StreamRoller
       end
 
       def transcode_flac_to_ogg
-        @toolman.pipe("vorbis", "-Q -o - '#{@filepath}'").io
+        @toolman.pipe("vorbis", "-Q -o - \"#{@filepath}\"").io
       end
     end
   end
