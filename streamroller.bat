@@ -1,1 +1,1 @@
-jruby -J-Djava.util.logging.config.file=null src\main.rb
+jruby src/main.rb
