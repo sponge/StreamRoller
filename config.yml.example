@@ -1,4 +1,4 @@
-location: D:/mp3/
+location: D:/music
 db: library.sqlite
 skip_discovery: true
 skip_album_art: false
@@ -8,7 +8,9 @@ cache_thumbnails: true
 handlers:
     flac_to_mp3:
         enabled: true
-        bitrate: 128
+
+    flac_to_ogg:
+        enabled: true
 
     mp3passthrough:
         enabled: true
