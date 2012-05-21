@@ -117,7 +117,6 @@ module StreamRoller
 
       def handle_request(sinatra_response, dbrow)
         @response = sinatra_response
-        puts self.class.supported_output
         if sinatra_response.params[:supported_mimetypes]
           return nil unless sinatra_response.params[:supported_mimetypes].include?(self.class.supported_output)
         end
