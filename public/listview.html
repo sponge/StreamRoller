@@ -1,0 +1,16 @@
+  <input ng-model="query" placeholder="Search artists and albums..."/>
+  <ul ng-controller="ArtistListCtrl">
+
+    <li ng-repeat="artist in artists | filter:query ">
+      <a href="#/{{artist.name}}/">{{artist.name}}</a>
+
+      <ul>
+        <li ng-repeat="album in artist.albums | filter:query">
+          <a href="#/{{artist.name}}/{{album}}/">{{album}}</a>
+        </li>
+      </ul>
+
+    </li>
+
+  </ul>
+</div>

@@ -1,0 +1,15 @@
+<div ng-repeat="album in albums" class="album">
+  <b>{{album.name}} ({{album.date}})</b>
+
+  <div class="row-fluid">
+    <div class="span2">
+      <img src="/pic/{{album.art}}/175"/>
+    </div>
+    <div class="span10">
+      <ul>
+        <li ng-repeat="song in album.tracks"><a ng-click="queueTrack(song)" data-id="{{song.id}}" href="/get/{{song.id}}">{{song.id3_track}}. {{song.id3_title}}</a></li>
+      </ul>
+    </div>
+  </div>
+
+</div>
